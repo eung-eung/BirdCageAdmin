@@ -1,0 +1,22 @@
+.header-container {
+    display: flex;
+    justify-content: space-between;
+    height: 70px;
+    align-items: center;
+    width: 100%;
+    box-shadow: rgba(0, 0, 0, 0.16) 0px 1px 4px;
+    position: fixed;
+    top: 0;
+    background: #fff;
+    z-index: 999;
+}
+
+.header-container .image-logo {
+    width: 50px;
+    margin-left: 40px;
+
+}
+
+.notification-box {
+    width: 200px;
+}

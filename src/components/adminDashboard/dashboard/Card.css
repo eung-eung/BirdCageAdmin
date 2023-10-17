@@ -1,0 +1,76 @@
+.card-container {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    grid-gap: 80px;
+    margin-top: 90px;
+    /* padding: 0 20px; */
+}
+
+.dashboard-container {
+    margin-left: 300px;
+    margin-right: 100px;
+    margin-bottom: 100px;
+}
+
+.chart-bar {
+    margin-top: 60px;
+    width: 100%;
+    height: 400px;
+    box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 12px;
+    padding: 40px 20px;
+
+}
+
+.card-item {
+    box-shadow: rgba(0, 0, 0, 0.02) 0px 1px 3px 0px, rgba(27, 31, 35, 0.15) 0px 0px 0px 1px;
+    padding: 10px 20px;
+    width: 300px;
+    border-radius: 15px;
+}
+
+.card-item p {
+    text-align: left;
+}
+
+.card-item p:nth-child(1) {
+    font-size: 16px;
+    font-weight: 700;
+    position: relative;
+
+}
+
+.card-item p:nth-child(2) {
+    font-size: 25px;
+    font-weight: 700;
+    margin-top: 5px;
+}
+
+.card-item p:nth-child(3) {
+    margin-top: 10px;
+    font-size: 10px;
+    color: #696969;
+}
+
+.item-chart {
+    color: #0B8A00;
+    background: #23C10A26;
+    position: absolute;
+    right: 0;
+    border-radius: 30px;
+    display: flex;
+    align-items: center;
+    padding: 2px 6px;
+    top: 0;
+
+}
+
+.studio-status {
+    width: 60%;
+    border: 0.2px solid #dddddd;
+}
+
+.chart-pie {
+    box-shadow: rgba(0, 0, 0, 0.02) 0px 1px 3px 0px, rgba(27, 31, 35, 0.15) 0px 0px 0px 1px;
+    width: 35%;
+    border: 1px solid #dddddd;
+}
