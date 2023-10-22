@@ -5,11 +5,13 @@
 .service-container .service-title {
     width: 100%;
     padding-left: 300px;
-    margin-top: 30px;
+    margin-top: 50px;
+    position: relative;
+    top: 80px
 }
 
 .service-action {
-    margin-top: 30px;
+    margin-top: 50px;
     display: flex;
     margin-left: 300px;
     justify-content: space-between;

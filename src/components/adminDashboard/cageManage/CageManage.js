@@ -1,5 +1,5 @@
 import React from 'react'
-import "./Service.css"
+import "./CageManage.css"
 import Box from '@mui/material/Box';
 import Input from '@mui/material/Input';
 import InputLabel from '@mui/material/InputLabel';
@@ -9,18 +9,18 @@ import TextField from '@mui/material/TextField';
 import SearchIcon from '@mui/icons-material/Search';
 import { Button } from "@mui/material"
 import ControlPointIcon from '@mui/icons-material/ControlPoint';
-import TableService from './TableService';
-import ServiceDialogCreate from './ServiceDialogCreate';
-export default function Service() {
+import CageDialogCreate from './CageDialogCreate';
+import TableCage from './TableCage';
+export default function CageManage() {
     return (
         <div style={{ marginTop: "80px" }} className='service-container'>
             <div className='service-title'>
-                <h3 style={{ textAlign: "left" }}>Service Management</h3>
+                <h3 style={{ textAlign: "left"}}>Cages Management</h3>
             </div>
             <div className='service-content'>
                 <div className='service-action'>
 
-                    <Box style={{ flex: "1", textAlign: "left" }} sx={{ '& > :not(style)': { m: 1 }, '.MuiOutlinedInput-notchedOutline': { border: 0 } }} >
+                    {/* <Box style={{ flex: "1", textAlign: "left" }} sx={{ '& > :not(style)': { m: 1 }, '.MuiOutlinedInput-notchedOutline': { border: 0 } }} >
                         <TextField
                             id="input-with-icon-textfield" className='search-input'
 
@@ -34,7 +34,7 @@ export default function Service() {
                             }}
                             variant="standard"
                         />
-                    </Box>
+                    </Box> */}
 
                     <div className='service-action-btn'>
                         {/* <Button
@@ -42,7 +42,7 @@ export default function Service() {
                             variant="contained">
                             <ControlPointIcon /> New Service
                         </Button> */}
-                        <ServiceDialogCreate />
+                        <CageDialogCreate />
                         <div>
                             {/* <Button id='select-all' variant="outlined">Select all</Button> */}
                             <Button id='delete' variant="outlined" color="error">
@@ -53,7 +53,7 @@ export default function Service() {
 
                 </div>
 
-                <TableService />
+                <TableCage />
 
                 <div>
 

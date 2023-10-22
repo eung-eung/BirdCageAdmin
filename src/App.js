@@ -7,7 +7,8 @@ import WithNav from './components/adminDashboard/withNav/WithNav';
 import Dashboard from './components/adminDashboard/dashboard/Dashboard';
 import Orders from './components/adminDashboard/orders/Orders';
 import Feedback from './components/adminDashboard/feedback/Feedback';
-import Service from './components/adminDashboard/service/Service';
+import CageManage from './components/adminDashboard/cageManage/CageManage';
+import CustomManage from './components/adminDashboard/customManage/CustomManage';
 
 function App() {
   return (
@@ -17,7 +18,8 @@ function App() {
           <Route path='/dashboard' element={<Dashboard />} />
           <Route path='/orders' element={<Orders />} />
           <Route path='/feedback' element={<Feedback />} />
-          <Route path='/service' element={<Service />} />
+          <Route path='/cage' element={<CageManage />} />
+          <Route path='/custom' element={<CustomManage />} />
         </Route>
         <Route element={<WithoutNav />} >
           <Route path="/" element={<Login />} />

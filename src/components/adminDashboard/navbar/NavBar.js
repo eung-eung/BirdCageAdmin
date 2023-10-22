@@ -29,11 +29,11 @@ export default function NavBar() {
             <NavLink className={({ isActive }) => isActive ? "nav-link active" : 'nav-link'} to="/user">
                 <AccountCircleIcon className='nav-icon' /> Users
             </NavLink>
-            <NavLink className={({ isActive }) => isActive ? "nav-link active" : 'nav-link'} to="/studio">
-                <CameraIcon className='nav-icon' /> Studios
+            <NavLink className={({ isActive }) => isActive ? "nav-link active" : 'nav-link'} to="/custom">
+                <CameraIcon className='nav-icon' /> Custom Cages Management
             </NavLink>
-            <NavLink className={({ isActive }) => isActive ? "nav-link active" : 'nav-link'} to="/service">
-                <SubscriptionsIcon className='nav-icon' /> Services
+            <NavLink className={({ isActive }) => isActive ? "nav-link active" : 'nav-link'} to="/cage">
+                <SubscriptionsIcon className='nav-icon' /> Cages
             </NavLink>
             <NavLink className={({ isActive }) => isActive ? "nav-link active" : 'nav-link'} to="/orders">
                 <ListAltIcon className='nav-icon' /> Orders
