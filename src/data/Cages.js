@@ -88,7 +88,7 @@ export const Products_Cage =
             "name": "Deco 79 Metal Round Birdcage with Latch Lock Closure and Hanging Hook, Set of 3 21\", 18\", 14\"H, White",
             "price": "59",
             "description": "About this item Color: white Finish: distressed Theme: French Country Material: iron",
-            "imagePath": "[\"https://m.media-amazon.com/images/I/71wTxcYdvbL._AC_SX679_.jpg\",\"https://m.media-amazon.com/images/I/71wTxcYdvbL._AC_SX450_.jpg\",\"https://m.media-amazon.com/images/I/71wTxcYdvbL._AC_SX466_.jpg\",\"https://m.media-amazon.com/images/I/71wTxcYdvbL._AC_SX425_.jpg\",\"https://m.media-amazon.com/images/I/71wTxcYdvbL._AC_SX569_.jpg\",\"https://m.media-amazon.com/images/I/71wTxcYdvbL._AC_SX355_.jpg\",\"https://m.media-amazon.com/images/I/71wTxcYdvbL._AC_SX522_.jpg\"]",
+            "imagePath": "https://m.media-amazon.com/images/I/71wTxcYdvbL._AC_SX679_.jpg",
             "width": 30,
             "length": 40,
             "height": 30,
