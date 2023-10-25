@@ -9,6 +9,7 @@ import Orders from './components/adminDashboard/orders/Orders';
 import Feedback from './components/adminDashboard/feedback/Feedback';
 import CageManage from './components/adminDashboard/cageManage/CageManage';
 import CustomManage from './components/adminDashboard/customManage/CustomManage';
+import UpdateCage from './components/adminDashboard/cageManage/UpdateCage';
 
 function App() {
   return (
@@ -20,6 +21,7 @@ function App() {
           <Route path='/feedback' element={<Feedback />} />
           <Route path='/cage' element={<CageManage />} />
           <Route path='/custom' element={<CustomManage />} />
+          <Route path='/update/:id' element={<UpdateCage />} />
         </Route>
         <Route element={<WithoutNav />} >
           <Route path="/" element={<Login />} />

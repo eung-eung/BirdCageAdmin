@@ -1,99 +1,165 @@
 import React, { useEffect, useState } from 'react';
 import { DataGrid } from '@mui/x-data-grid';
-import { Products_Cage } from '../../../data/Cages';
-import { Button, Dialog, DialogContent, DialogTitle, Typography } from '@mui/material'; // Import the necessary components
-
+import { Button, Dialog, DialogContent, DialogTitle, IconButton, TextField, Typography } from '@mui/material'; // Import the necessary components
+import DialogViewDetail from './DialogViewDetail';
+import { DialogActions, DialogContentText } from '@mui/material';
+import VisibilityIcon from '@mui/icons-material/Visibility';
+import ModeEditIcon from '@mui/icons-material/ModeEdit';
+import DeleteIcon from '@mui/icons-material/Delete';
+import dayjs from 'dayjs';
+import { Link } from 'react-router-dom';
 
 
 
 
 
 export default function TableCage() {
-    const getRowId = (row) => row._id;
-    const [descriptionDialogOpen, setDescriptionDialogOpen] = useState(false);
-    const [imageDialogOpen, setImageDialogOpen] = useState(false);
-    const [selectedRow, setSelectedRow] = useState(null);
+  const getRowId = (row) => row._id;
+  const [dataDialogOpen, setCagesDialogOpen] = useState(false)
+  const [selectedRow, setSelectedRow] = useState(null);
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [cages, setCages] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
-    const openDescriptionDialog = (row) => {
-        setSelectedRow(row);
-        setDescriptionDialogOpen(true);
-      };
-    
-      const openImageDialog = (row) => {
-        setSelectedRow(row);
-        setImageDialogOpen(true);
-      };
-    
-      const closeDialogs = () => {
-        setSelectedRow(null);
-        setDescriptionDialogOpen(false);
-        setImageDialogOpen(false);
-      };
-    
+
+  //Get all cages
+  const fetchCage = () => {
+    const apiUrl = 'http://localhost:5000/api/v1/cage';
+
+    fetch(apiUrl)
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error('Network response was not ok');
+        }
+        return response.json();
+      })
+      .then((responseData) => {
+        setCages(responseData.data.cages);
+        setLoading(false);
+      })
+      .catch((err) => {
+        setError(err);
+        setLoading(false);
+      });
+  };
+
+  // Fetch cage data when the component mounts
+  useEffect(() => {
+    fetchCage();
+  }, []);
+
+  if (loading) {
+    return <div>Loading...</div>;
+  }
+
+  if (error) {
+    return <div>Error: {error.message}</div>;
+  }
+
+  //handle dialog
+
+
+  const openDataDialog = (row) => {
+    setSelectedRow(row);
+    setCagesDialogOpen(true);
+  };
+
+  const closeDialogs = () => {
+    setSelectedRow(null);
+    setCagesDialogOpen(false);
+  };
+
+  const openDeleteDialog = (row) => {
+    setSelectedRow(row);
+    setDeleteDialogOpen(true);
+  };
+
+  //handle delete
+  const handleDelete = (cage) => {
+    const apiUrl = `http://localhost:5000/api/v1/cage/${cage._id}`;
+
+    fetch(apiUrl, {
+      method: 'DELETE',
+    })
+      .then((response) => {
+        if (response.ok) {
+          const updatedCages = cages.filter((c) => c._id !== cage._id);
+          setCages(updatedCages);
+          setDeleteDialogOpen(false)
+        }
+      })
+      .catch((err) => {
+        console.error('Error deleting cage', err);
+      });
+  };
+
+
+
 
   const columns = [
-    { field: '_id', headerName: 'Id', width: 100 },
-    { field: 'name', headerName: 'Name', width: 700},
-    { field: 'price', headerName: 'Price', width: 100},
+    { field: 'name', headerName: 'Name', width: 750 },
+    { field: 'price', headerName: 'Price', width: 100 },
     {
-        field: 'imagePath',
-        headerName: 'Image',
-        width: 150,
-        renderCell: (params) => (
-          <Button variant="text" onClick={() => openImageDialog(params.row)}>View</Button>
-        ),
-      },
-    { field: 'width', headerName: 'Width', width: 100},
-    { field: 'length', headerName: 'Length', width: 100},
-    { field: 'height', headerName: 'Height', width: 100},
-    { field: 'inStock', headerName: 'In Stock', width: 100},
-    { field: 'createDate', headerName: 'Create Date', width: 100},
-    { field: 'status', headerName: 'Status', width: 100},
-    { field: 'rating', headerName: 'Rating', width: 100},
-    {
-        field: 'description',
-        headerName: 'Description',
-        width: 150,
-        renderCell: (params) => (
-            <Button variant="text" onClick={() => openDescriptionDialog(params.row)}>View</Button>
-        ),
-      },
-   
-];
-    return (
-        <div style={{ height: 400, marginLeft: "300px", marginTop: "30px" }}>
-            <DataGrid
-                rows={Products_Cage}
-                columns={columns}
-                getRowId={getRowId}
-                initialState={{
-                    pagination: {
-                        paginationModel: { page: 0, pageSize: 5 },
-                    },
-                }}
-                pageSizeOptions={[5, 10]}
-                checkboxSelection
-            />
-            {/* Description Dialog */}
-      <Dialog open={descriptionDialogOpen} onClose={closeDialogs}>
-        <DialogTitle>{selectedRow && selectedRow.name}</DialogTitle>
+      field: 'actions',
+      headerName: 'Actions',
+      width: 180,
+      renderCell: (params) => (
+        <div>
+          <Button variant="text" onClick={() => openDataDialog(params.row)}><VisibilityIcon /></Button>
+          <Button variant="text" ><Link to={`/update/${params.row._id}`}><ModeEditIcon /></Link></Button>
+          <Button variant="text" onClick={() => openDeleteDialog(params.row)}><DeleteIcon /></Button>
+        </div>
+      ),
+    },
+
+  ];
+
+
+  return (
+    <div style={{ height: 400, marginLeft: "300px", marginTop: "30px" }}>
+      <DataGrid
+        rows={cages}
+        columns={columns}
+        getRowId={getRowId}
+        initialState={{
+          pagination: {
+            paginationModel: { page: 0, pageSize: 5 },
+          },
+        }}
+        pageSizeOptions={[5, 10]}
+        checkboxSelection
+      />
+
+      {/* Detail Dialog */}
+      <DialogViewDetail
+        open={dataDialogOpen}
+        onClose={closeDialogs}
+        selectedData={selectedRow}
+      />
+
+      {/* Confirm delete dialog */}
+      <Dialog
+        open={deleteDialogOpen}
+        onClose={() => setDeleteDialogOpen(false)}
+      >
+        <DialogTitle>Confirm Delete</DialogTitle>
         <DialogContent>
-          <Typography>{selectedRow && selectedRow.description}</Typography>
+          <DialogContentText>
+            Are you sure you want to delete this item?
+          </DialogContentText>
         </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setDeleteDialogOpen(false)} color="primary">
+            Cancel
+          </Button>
+          <Button onClick={() => handleDelete(selectedRow)} color="error">
+            Delete
+          </Button>
+        </DialogActions>
       </Dialog>
 
-      {/* Image Dialog */}
-      <Dialog open={imageDialogOpen} onClose={closeDialogs}>
-        <DialogTitle>{selectedRow && selectedRow.name}</DialogTitle>
-        <DialogContent>
-        <img
-      src={selectedRow && selectedRow.imagePath}
-      alt="Product Image"
-      style={{ width: '100%', height: '300px', objectFit: 'contain' }}
-    />
-          <Typography>{selectedRow && selectedRow.imagePath}</Typography>
-        </DialogContent>
-      </Dialog>
-        </div>
-    );
+
+    </div>
+  );
 }
