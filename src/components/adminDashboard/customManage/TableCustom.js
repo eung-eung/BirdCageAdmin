@@ -1,12 +1,21 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { DataGrid } from '@mui/x-data-grid';
 import { CageCustom } from '../../../data/CageCustom';
 import { Button } from '@mui/material';
-
+import io from "socket.io-client"
+const socket = io.connect('http://localhost:5000')
 
 export default function TableCustom() {
   const [rows, setRows] = useState(CageCustom);
-
+  const [status, setStatus] = useState("")
+  useEffect(() => {
+    socket.on("receive_request_custom_cage", (d) => {
+      console.log(d);
+      setStatus(d)
+    })
+  },
+    [socket])
+  console.log("re-render");
   const handleAccept = (row) => {
     // const updatedRows = rows.map((r) => (r.id === row.id ? { ...r, status: 'Accepted' } : r));
     // setRows(updatedRows);
@@ -79,7 +88,7 @@ export default function TableCustom() {
         },
       },
     },
-    
+
     {
       field: 'action',
       headerName: 'Action',
@@ -87,7 +96,7 @@ export default function TableCustom() {
       renderCell: (params) => {
         return (
           <div>
-            <Button variant="contained" style={{marginRight: "10px"}}>
+            <Button variant="contained" style={{ marginRight: "10px" }}>
               Accept
             </Button>
             <Button variant="outlined">

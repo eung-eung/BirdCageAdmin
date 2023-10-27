@@ -15,7 +15,7 @@ export default function CageManage() {
     return (
         <div style={{ marginTop: "80px" }} className='service-container'>
             <div className='service-title'>
-                <h3 style={{ textAlign: "left"}}>Cages Management</h3>
+                <h3 style={{ textAlign: "left" }}>Cages Management</h3>
             </div>
             <div className='service-content'>
                 <div className='service-action'>
