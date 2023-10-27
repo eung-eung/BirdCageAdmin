@@ -1,6 +1,8 @@
-import { Fragment } from 'react'
+import { Fragment, useEffect, useState } from 'react'
 import { Popover, Transition } from '@headlessui/react'
 import { ChevronDownIcon, PhoneIcon, PlayCircleIcon } from '@heroicons/react/20/solid'
+import io from "socket.io-client"
+
 import {
   ArrowPathIcon,
   ChartPieIcon,
@@ -17,19 +19,28 @@ const solutions = [
   { name: 'Integrations', description: 'Connect with third-party tools', href: '#', icon: SquaresPlusIcon },
   { name: 'Automations', description: 'Build strategic funnels that will convert', href: '#', icon: ArrowPathIcon },
 ]
-const callsToAction = [
-  { name: 'Watch demo', href: '#', icon: PlayCircleIcon },
-  { name: 'Contact sales', href: '#', icon: PhoneIcon },
-]
 
+const socket = io.connect('http://localhost:5000')
 export default function NotificationStack() {
+  const [status, setStatus] = useState("")
+  const [notiList, setNotiList] = useState([])
+  useEffect(() => {
+    socket.on("receive_request_custom_cage", (d) => {
+      console.log(d);
+      setNotiList(prev => [...prev, d])
+      setStatus(d.status)
+    })
+  },
+    [socket])
+  console.log(notiList);
   return (
     <Popover className="relative">
       <Popover.Button className="inline-flex items-center gap-x-1 text-sm font-semibold leading-6 text-gray-900">
-        <span><Badge badgeContent={4} color='error'>
-                    <NotificationsIcon color='action' />
-                </Badge></span>
-        <ChevronDownIcon className="h-5 w-5" aria-hidden="true" />
+        <span>
+          <Badge badgeContent={notiList.length} color='error'>
+            <NotificationsIcon color='action' />
+          </Badge></span>
+
       </Popover.Button>
 
       <Transition
@@ -44,22 +55,22 @@ export default function NotificationStack() {
         <Popover.Panel className="absolute  mt-5 flex w-screen max-w-max -translate-x-2/3 px-4">
           <div className="w-screen max-w-md flex-auto overflow-hidden rounded-3xl bg-white text-sm leading-6 shadow-lg ring-1 ring-gray-900/5">
             <div className="p-4">
-              {solutions.map((item) => (
-                <div key={item.name} className="group relative flex gap-x-6 rounded-lg p-4 hover:bg-gray-50">
-                  <div className="mt-1 flex h-11 w-11 flex-none items-center justify-center rounded-lg bg-gray-50 group-hover:bg-white">
+              {notiList.map((item, index) => (
+                <div key={index} className="group items-center justify-center relative flex gap-x-6 rounded-lg p-4 hover:bg-gray-50">
+                  {/* <div className="mt-1 flex h-11 w-11 flex-none items-center justify-center rounded-lg bg-gray-50 group-hover:bg-white">
                     <item.icon className="h-6 w-6 text-gray-600 group-hover:text-indigo-600" aria-hidden="true" />
-                  </div>
+                  </div> */}
                   <div>
                     <a href={item.href} className="font-semibold text-gray-900">
-                      {item.name}
+                      {item.userId}
                       <span className="absolute inset-0" />
                     </a>
-                    <p className="mt-1 text-gray-600">{item.description}</p>
+                    <p className="mt-1 text-gray-600">Sent a request for custom page</p>
                   </div>
                 </div>
               ))}
             </div>
-           
+
           </div>
         </Popover.Panel>
       </Transition>
