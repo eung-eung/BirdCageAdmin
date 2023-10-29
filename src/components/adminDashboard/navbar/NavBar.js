@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { Link, NavLink } from 'react-router-dom'
 import DashboardIcon from '@mui/icons-material/Dashboard';
 import AssignmentIcon from '@mui/icons-material/Assignment';
@@ -8,16 +8,21 @@ import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import ChatBubbleIcon from '@mui/icons-material/ChatBubble';
 import SubscriptionsIcon from '@mui/icons-material/Subscriptions';
 import "./NavBar.css"
-import avatar from "../../../images/user.jpg"
+import avatar from "../../../images/profile.jpg"
+import UseToken from '../../handleToken/UseToken';
+import {jwtDecode} from 'jwt-decode';
 export default function NavBar() {
+    const phoneNum = localStorage.getItem('phoneNum');
+    const role = localStorage.getItem('role');
+
 
     return (
         <div className='nav-links'>
             <div className='user-container'>
                 <img className="avatar" src={avatar} />
                 <div className='user-detail'>
-                    <p>HoaiPhuong</p>
-                    <p>phuong nguyen</p>
+                    <p>{phoneNum}</p>
+                    <p>{role}</p>
                 </div>
             </div>
             <NavLink className={({ isActive }) => isActive ? "nav-link active" : 'nav-link'} to="/dashboard">
@@ -43,4 +48,5 @@ export default function NavBar() {
             </NavLink>
         </div>
     )
-}
+    }
+

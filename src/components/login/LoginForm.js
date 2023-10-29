@@ -54,6 +54,9 @@ export default function LoginForm() {
         setLoading(false)
         if (res.status == "success") {
           console.log(res);
+        localStorage.setItem('phoneNum', res.data.account.phoneNumber);
+        localStorage.setItem('role', res.data.account.role);
+
           if (res.data.account.role === "admin") {
             setToken(res.data.token);
             navigate('/dashboard');
