@@ -54,8 +54,8 @@ export default function LoginForm() {
         setLoading(false)
         if (res.status == "success") {
           console.log(res);
-        localStorage.setItem('phoneNum', res.data.account.phoneNumber);
-        localStorage.setItem('role', res.data.account.role);
+          localStorage.setItem('phoneNum', res.data.account.phoneNumber);
+          localStorage.setItem('role', res.data.account.role);
 
           if (res.data.account.role === "admin") {
             setToken(res.data.token);
@@ -90,7 +90,7 @@ export default function LoginForm() {
             type='text'
             placeholder='Phone number'
           />
-          {checkValidPhoneNum ? "" : "Invalid phone number format"}
+          <span style={{ color: "red" }}>{checkValidPhoneNum ? "" : "Invalid phone number format"}</span>
         </div>
 
         <div className="input-container">
@@ -109,15 +109,6 @@ export default function LoginForm() {
         <div className="input-container">
           <button to="/dashboard" onClick={handleLogin} id="login-submit">Log in</button>
           <div style={{ color: "red", marginTop: "10px" }}>{message}</div>
-          <p className="privacy">By creating an account, you agree to the
-            <a className="privacy-link" href="#">Terms of use</a>
-            and
-            <a className="privacy-link" href="#">Privacy Policy</a>.</p>
-        </div>
-
-        <div className="other-actions">
-          <p>Other issue with sign in</p>
-          <p>Forget your password</p>
         </div>
       </form>
       {/* <div className="create-account">

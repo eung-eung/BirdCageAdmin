@@ -10,7 +10,7 @@ import SubscriptionsIcon from '@mui/icons-material/Subscriptions';
 import "./NavBar.css"
 import avatar from "../../../images/profile.jpg"
 import UseToken from '../../handleToken/UseToken';
-import {jwtDecode} from 'jwt-decode';
+import { jwtDecode } from 'jwt-decode';
 export default function NavBar() {
     const phoneNum = localStorage.getItem('phoneNum');
     const role = localStorage.getItem('role');
@@ -28,9 +28,6 @@ export default function NavBar() {
             <NavLink className={({ isActive }) => isActive ? "nav-link active" : 'nav-link'} to="/dashboard">
                 <DashboardIcon className='nav-icon' /> Dashboard
             </NavLink>
-            <NavLink className={({ isActive }) => isActive ? "nav-link active" : 'nav-link'} to="/chat">
-                <ChatBubbleIcon className='nav-icon' /> Chat
-            </NavLink>
             <NavLink className={({ isActive }) => isActive ? "nav-link active" : 'nav-link'} to="/user">
                 <AccountCircleIcon className='nav-icon' /> Users
             </NavLink>
@@ -38,7 +35,7 @@ export default function NavBar() {
                 <CameraIcon className='nav-icon' /> Custom Cages Management
             </NavLink>
             <NavLink className={({ isActive }) => isActive ? "nav-link active" : 'nav-link'} to="/cage">
-                <SubscriptionsIcon className='nav-icon' /> Cages
+                <SubscriptionsIcon className='nav-icon' /> Cages Management
             </NavLink>
             <NavLink className={({ isActive }) => isActive ? "nav-link active" : 'nav-link'} to="/orders">
                 <ListAltIcon className='nav-icon' /> Orders
@@ -48,5 +45,5 @@ export default function NavBar() {
             </NavLink>
         </div>
     )
-    }
+}
 
