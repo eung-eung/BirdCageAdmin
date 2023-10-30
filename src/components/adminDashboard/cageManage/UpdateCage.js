@@ -16,15 +16,14 @@ export default function UpdateCage() {
         description: '',
         createDate: dayjs().format('YYYY/MM/DD'),
         price: '',
-        status: 'Available',
-        rating: '',
-        imagePath: '',
-        delFlg: false,
+        filename: [],
     });
     const [isWidthValid, setIsWidthValid] = useState(true);
     const [isLengthValid, setIsLengthValid] = useState(true);
     const [isHeightValid, setIsHeightValid] = useState(true);
     const [error, setError] = useState(null);
+    const [imageID, setImageID] = useState('');
+    const [imgCage, setImgCage] = useState([]);
 
     const { id } = useParams();
     useEffect(() => {
@@ -33,6 +32,8 @@ export default function UpdateCage() {
             .then((response) => {
                 const dataCage = response.data.data.component;
                 console.log(dataCage);
+                setImageID(dataCage.image[0]._id);
+                console.log(imageID)
                 setCage(dataCage);
             })
             .catch((error) => {
@@ -41,18 +42,36 @@ export default function UpdateCage() {
             });
     }, [id]);
 
+    useEffect(() => {
+        axios
+            .get(`http://localhost:5000/api/v1/image/${imageID}`)
+            .then((response) => {
+                const imgData = response.data.data.img;
+                if (imgData && imgData.imagePath) {
+                    console.log(imgData.imagePath);
+                    setImgCage(imgData.imagePath);
+                } else {
+                    setError('Image data or imagePath not found in the API response.');
+                }
+            })
+            .catch((error) => {
+                console.error(error);
+                setError('Unable to fetch Cage data.');
+            });
+    }, [imageID]);
+
     const handleImageChange = (e) => {
         const selectedImages = e.target.files;
-        const imagePaths = [];
+        const filename = [];
 
         for (let i = 0; i < selectedImages.length; i++) {
             const imagePath = URL.createObjectURL(selectedImages[i]);
-            imagePaths.push(imagePath);
+            filename.push(imagePath);
         }
 
         setCage((prevCage) => ({
             ...prevCage,
-            imagePath: imagePaths, // Assuming imagePath is an array to store multiple image paths
+            imagePath: filename, // Assuming imagePath is an array to store multiple image paths
         }));
     };
     const handleChange = (e) => {
@@ -239,7 +258,7 @@ export default function UpdateCage() {
                                             class="w-full bg-gray-100 bg-opacity-50 rounded border border-gray-300 focus:border-indigo-500 focus:bg-white focus:ring-2 focus:ring-indigo-200 text-base outline-none text-gray-700 py-1 px-3 leading-8 transition-colors duration-200 ease-in-out" />
                                     </div> */}
                                     <div class="sm:col-span-3">
-                                        <label for="imagePath" class="block text-sm font-medium leading-6 text-gray-900">Image Path</label>
+                                        <label for="imagePath" class="block text-sm font-medium leading-6 text-gray-900">Main image</label>
                                         <div class="mt-2">
                                             <input
                                                 type="file"
@@ -251,12 +270,29 @@ export default function UpdateCage() {
                                                 autoComplete="Image Path"
                                                 className="block p-2 w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
                                             />
-
                                         </div>
                                     </div>
-                                    <div className="p-4 md:w-2/3 sm:w-1/2 w-full" >
-                                        <img src={cage.imagePath} alt="Image Preview" />
-                                    </div>
+                                   
+                                        <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+                                            <div class="mx-auto max-w-2xl py-10 sm:py-12 lg:max-w-none lg:py-16">
+                                                <div >
+                                                    <div class="relative h-full w-full overflow-hidden rounded-lg bg-white sm:aspect-h-1 sm:aspect-w-2 lg:aspect-h-1 lg:aspect-w-1 group-hover:opacity-75 sm:h-64">
+                                                        <img src={cage.imagePath} alt='Main image' class="h-full w-full object-contain object-center" />
+                                                    </div>
+                                                </div>
+                                                <h2 class="text-2xl font-bold text-gray-900">Extra images</h2>
+                                                <div class="mt-6 space-y-12 lg:grid lg:grid-cols-3 lg:gap-x-6 lg:space-y-0">
+                                                    {imgCage.map((image, index) => (
+                                                        <div class="group relative" key={index}>
+                                                            <div class="relative h-80 w-full overflow-hidden rounded-lg bg-white sm:aspect-h-1 sm:aspect-w-2 lg:aspect-h-1 lg:aspect-w-1 group-hover:opacity-75 sm:h-64">
+                                                                <img src={image} alt={`Image ${index}`} class="h-full w-full object-contain object-center" />
+                                                            </div>
+                                                        </div>
+                                                    ))}
+                                                </div>
+                                            </div>
+                                        </div>
+                                
 
                                 </div>
                                 <div class="p-2 w-full">
