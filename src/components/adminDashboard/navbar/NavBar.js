@@ -9,11 +9,13 @@ import ChatBubbleIcon from '@mui/icons-material/ChatBubble';
 import SubscriptionsIcon from '@mui/icons-material/Subscriptions';
 import "./NavBar.css"
 import avatar from "../../../images/profile.jpg"
+import LogoutIcon from '@mui/icons-material/Logout';
 import UseToken from '../../handleToken/UseToken';
-import {jwtDecode} from 'jwt-decode';
+import { jwtDecode } from 'jwt-decode';
+import Logout from '../../logout/Logout';
 export default function NavBar() {
-    const phoneNum = localStorage.getItem('phoneNum');
-    const role = localStorage.getItem('role');
+    const phoneNum = sessionStorage.getItem('phoneNum');
+    const role = sessionStorage.getItem('role');
 
 
     return (
@@ -31,9 +33,14 @@ export default function NavBar() {
             <NavLink className={({ isActive }) => isActive ? "nav-link active" : 'nav-link'} to="/chat">
                 <ChatBubbleIcon className='nav-icon' /> Chat
             </NavLink>
-            <NavLink className={({ isActive }) => isActive ? "nav-link active" : 'nav-link'} to="/user">
-                <AccountCircleIcon className='nav-icon' /> Users
-            </NavLink>
+            {role && role !== 'staff' ? (
+                <NavLink
+                    className={({ isActive }) => isActive ? "nav-link active" : 'nav-link'}
+                    to="/user"
+                >
+                    <AccountCircleIcon className='nav-icon' /> Users
+                </NavLink>
+            ) : null}
             <NavLink className={({ isActive }) => isActive ? "nav-link active" : 'nav-link'} to="/custom">
                 <CameraIcon className='nav-icon' /> Custom Cages Management
             </NavLink>
@@ -46,7 +53,10 @@ export default function NavBar() {
             <NavLink className={({ isActive }) => isActive ? "nav-link active" : 'nav-link'} to="/feedback">
                 <AssignmentIcon className='nav-icon' /> Feedbacks
             </NavLink>
+            <NavLink className={({ isActive }) => isActive ? "nav-link active" : 'nav-link'} to="/logout">
+                <LogoutIcon className='nav-icon' /> Logout
+            </NavLink>
         </div>
     )
-    }
+}
 
