@@ -54,14 +54,16 @@ export default function LoginForm() {
         setLoading(false)
         if (res.status == "success") {
           console.log(res);
-          localStorage.setItem('phoneNum', res.data.account.phoneNumber);
-          localStorage.setItem('role', res.data.account.role);
+          sessionStorage.setItem('phoneNum', res.data.account.phoneNumber);
+          sessionStorage.setItem('role', res.data.account.role);
 
-          if (res.data.account.role === "admin" || res.data.account.role === "staff") {
+          if (res.data.account.role === "admin" ||
+            res.data.account.role === "staff" ||
+            res.data.account.role === "manager") {
             setToken(res.data.token);
             navigate('/dashboard');
           } else {
-            setMessage("This is not an admin account");
+            setMessage("This account has not been authorized!");
           }
         } else {
           setMessage(res.message)

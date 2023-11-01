@@ -10,18 +10,23 @@ import Feedback from './components/adminDashboard/feedback/Feedback';
 import CageManage from './components/adminDashboard/cageManage/CageManage';
 import CustomManage from './components/adminDashboard/customManage/CustomManage';
 import UpdateCage from './components/adminDashboard/cageManage/UpdateCage';
+import Logout from './components/logout/Logout';
+import ProtectedRoute from './components/protectedRoute/ProtectedRoute';
 
 function App() {
   return (
     <div className="App">
       <Routes>
         <Route element={<WithNav />} >
-          <Route path='/dashboard' element={<Dashboard />} />
-          <Route path='/orders' element={<Orders />} />
-          <Route path='/feedback' element={<Feedback />} />
-          <Route path='/cage' element={<CageManage />} />
-          <Route path='/custom' element={<CustomManage />} />
-          <Route path='/update/:id' element={<UpdateCage />} />
+          <Route path='/dashboard' element={<ProtectedRoute><Dashboard /></ProtectedRoute> } />
+          <Route path='/orders' element={<ProtectedRoute><Orders /></ProtectedRoute> } />
+          <Route path='/feedback' element={<ProtectedRoute><Feedback /></ProtectedRoute> } />
+          <Route path='/cage' element={<ProtectedRoute><CageManage /></ProtectedRoute> } />
+          <Route path='/custom' element={<ProtectedRoute><CustomManage /></ProtectedRoute> } />
+          <Route path='/update/:id' element={<ProtectedRoute><UpdateCage /></ProtectedRoute> } />
+          <Route path='/logout' element={<ProtectedRoute><Logout /></ProtectedRoute> } />
+
+          {/* <Route path='/logout' element={<Logout />} /> */}
         </Route>
         <Route element={<WithoutNav />} >
           <Route path="/" element={<Login />} />
