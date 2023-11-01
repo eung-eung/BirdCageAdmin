@@ -57,7 +57,7 @@ export default function LoginForm() {
           localStorage.setItem('phoneNum', res.data.account.phoneNumber);
           localStorage.setItem('role', res.data.account.role);
 
-          if (res.data.account.role === "admin") {
+          if (res.data.account.role === "admin" || res.data.account.role === "staff") {
             setToken(res.data.token);
             navigate('/dashboard');
           } else {
