@@ -11,7 +11,7 @@ import "./NavBar.css"
 import avatar from "../../../images/profile.jpg"
 import LogoutIcon from '@mui/icons-material/Logout';
 import UseToken from '../../handleToken/UseToken';
-import {jwtDecode} from 'jwt-decode';
+import { jwtDecode } from 'jwt-decode';
 import Logout from '../../logout/Logout';
 
 export default function NavBar() {
@@ -30,9 +30,6 @@ export default function NavBar() {
             </div>
             <NavLink className={({ isActive }) => isActive ? "nav-link active" : 'nav-link'} to="/dashboard">
                 <DashboardIcon className='nav-icon' /> Dashboard
-            </NavLink>
-            <NavLink className={({ isActive }) => isActive ? "nav-link active" : 'nav-link'} to="/chat">
-                <ChatBubbleIcon className='nav-icon' /> Chat
             </NavLink>
             {role && role !== 'staff' ? (
                 <NavLink
