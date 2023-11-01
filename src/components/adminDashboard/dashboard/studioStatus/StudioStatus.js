@@ -18,9 +18,9 @@ function createData(
 }
 
 const rows = [
-    createData('Artium', "https://sohanews.sohacdn.com/thumb_w/660/160588918557773824/2022/2/11/photo1644549764864-1644549765115430465189.jpg", "vintage", 2027, "100%"),
-    createData('Wego', "https://sohanews.sohacdn.com/thumb_w/660/160588918557773824/2022/2/11/photo1644549764864-1644549765115430465189.jpg", "modern", 2027, "95%"),
-    createData('Táo 9', "https://sohanews.sohacdn.com/thumb_w/660/160588918557773824/2022/2/11/photo1644549764864-1644549765115430465189.jpg", "minimalist", 2027, "65%"),
+    createData('Artium', "https://m.media-amazon.com/images/I/71lpWgS-yML._AC_SY450_.jpg", "900$", "2023/10/30", 999),
+    createData('Wego', "https://m.media-amazon.com/images/I/81gYKAMky+L._AC_SY879_.jpg", "700$", "2023/10/29", 573),
+    createData('Henry V', "https://m.media-amazon.com/images/I/81xnKwvU0-L._AC_SX679_.jpg", "1040$", "2023/10/20", 302),
 ];
 
 
@@ -28,15 +28,15 @@ export default function StudioStatus() {
 
     return (
         <>
-            <h3 style={{ textAlign: "left", padding: "5px 10px" }}>Studio Status</h3>
+            <h3 style={{ textAlign: "left", padding: "5px 10px" }}>Top 3 Cages Best Seller</h3>
             <TableContainer component={Paper}>
                 <Table sx={{ minWidth: 650 }} aria-label="simple table">
                     <TableHead>
                         <TableRow>
-                            <TableCell style={{ color: "#696969" }}>Studio Name</TableCell>
-                            <TableCell style={{ color: "#696969" }} align="center">Style</TableCell>
-                            <TableCell style={{ color: "#696969" }} align="center">Exp</TableCell>
-                            <TableCell style={{ color: "#696969" }} align="center">Disipline</TableCell>
+                            <TableCell style={{ color: "#696969" }}>Cage Name</TableCell>
+                            <TableCell style={{ color: "#696969" }} align="center">Revenue</TableCell>
+                            <TableCell style={{ color: "#696969" }} align="center">Create Date</TableCell>
+                            <TableCell style={{ color: "#696969" }} align="center">In Stock</TableCell>
                             <TableCell style={{ color: "#696969" }} align="center">Status</TableCell>
                         </TableRow>
                     </TableHead>
@@ -54,7 +54,8 @@ export default function StudioStatus() {
                                             width: "50px",
                                             height: "50px",
                                             borderRadius: "50%",
-                                            marginRight: "20px"
+                                            marginRight: "20px",
+                                            objectFit: "contain"
                                         }}
                                         src={row.image} />
                                     {
@@ -65,7 +66,7 @@ export default function StudioStatus() {
                                 <TableCell align="center">{row.style}</TableCell>
                                 <TableCell align="center">{row.exp}</TableCell>
                                 <TableCell align="center">{row.disipline}</TableCell>
-                                <TableCell align="center">OK</TableCell>
+                                <TableCell align="center">Available</TableCell>
                             </TableRow>
                         ))}
                     </TableBody>

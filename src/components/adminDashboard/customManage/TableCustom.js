@@ -108,7 +108,7 @@ export default function TableCustom() {
     },
   ];
   return (
-    <div>
+    <div >
       <DataGrid
         rows={rows}
         columns={columns}

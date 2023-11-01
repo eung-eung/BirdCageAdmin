@@ -8,24 +8,24 @@ import StudioStatus from './studioStatus/StudioStatus'
 import PieChart from './pieChart/PieChart'
 const array = [
     {
-        title: "Total users",
-        total: '460',
-        label: 'Users'
+        title: "Total customer",
+        total: '44',
+        label: 'Customers'
     },
     {
-        title: "Web View",
-        total: '3342',
-        label: 'Viewers'
+        title: "Total Cage Custom",
+        total: '20',
+        label: 'Cage Custom'
     },
     {
-        title: "User applied",
+        title: "Total Cages",
         total: '77',
-        label: 'Applicants'
+        label: 'Cages'
     },
     {
-        title: "Resigned Employees",
-        total: '17',
-        label: 'Employee'
+        title: "Revenue",
+        total: '7789',
+        label: '$'
     }
 ]
 export default function Dashboard() {
@@ -43,7 +43,7 @@ export default function Dashboard() {
                     <StudioStatus />
                 </div>
                 <div className='chart-pie'>
-                    <h3>Top 3 Studio Revenue</h3>
+                    <h3>Top 3 Cages Best Seller</h3>
                     <h4 style={{ color: "#0B1354" }}>450</h4>
                     <div style={{ height: "250px", marginTop: "30px" }}>
                         <PieChart />

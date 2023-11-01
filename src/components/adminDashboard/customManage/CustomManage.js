@@ -3,8 +3,8 @@ import TableCustom from './TableCustom'
 
 export default function CustomManage() {
   return (
-    <div style={{marginLeft: "350px", width: "65rem", marginTop:"100px"}}>
-        <TableCustom/>
+    <div style={{ marginLeft: "350px", width: "70%", marginTop: "100px" }}>
+      <TableCustom />
     </div>
   )
 }

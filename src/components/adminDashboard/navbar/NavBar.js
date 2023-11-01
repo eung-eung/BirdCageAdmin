@@ -11,8 +11,9 @@ import "./NavBar.css"
 import avatar from "../../../images/profile.jpg"
 import LogoutIcon from '@mui/icons-material/Logout';
 import UseToken from '../../handleToken/UseToken';
-import { jwtDecode } from 'jwt-decode';
+import {jwtDecode} from 'jwt-decode';
 import Logout from '../../logout/Logout';
+
 export default function NavBar() {
     const phoneNum = sessionStorage.getItem('phoneNum');
     const role = sessionStorage.getItem('role');
@@ -45,7 +46,7 @@ export default function NavBar() {
                 <CameraIcon className='nav-icon' /> Custom Cages Management
             </NavLink>
             <NavLink className={({ isActive }) => isActive ? "nav-link active" : 'nav-link'} to="/cage">
-                <SubscriptionsIcon className='nav-icon' /> Cages
+                <SubscriptionsIcon className='nav-icon' /> Cages Management
             </NavLink>
             <NavLink className={({ isActive }) => isActive ? "nav-link active" : 'nav-link'} to="/orders">
                 <ListAltIcon className='nav-icon' /> Orders

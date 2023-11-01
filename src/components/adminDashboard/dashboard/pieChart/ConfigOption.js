@@ -12,7 +12,7 @@ export const data = {
     labels: [
         'Artium',
         'Wego',
-        'Táo 9'
+        'Henry'
     ],
     datasets: [{
 

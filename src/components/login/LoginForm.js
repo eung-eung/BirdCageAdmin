@@ -92,7 +92,7 @@ export default function LoginForm() {
             type='text'
             placeholder='Phone number'
           />
-          {checkValidPhoneNum ? "" : "Invalid phone number format"}
+          <span style={{ color: "red" }}>{checkValidPhoneNum ? "" : "Invalid phone number format"}</span>
         </div>
 
         <div className="input-container">
@@ -111,15 +111,6 @@ export default function LoginForm() {
         <div className="input-container">
           <button to="/dashboard" onClick={handleLogin} id="login-submit">Log in</button>
           <div style={{ color: "red", marginTop: "10px" }}>{message}</div>
-          <p className="privacy">By creating an account, you agree to the
-            <a className="privacy-link" href="#">Terms of use</a>
-            and
-            <a className="privacy-link" href="#">Privacy Policy</a>.</p>
-        </div>
-
-        <div className="other-actions">
-          <p>Other issue with sign in</p>
-          <p>Forget your password</p>
         </div>
       </form>
       {/* <div className="create-account">
