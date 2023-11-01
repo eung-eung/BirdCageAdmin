@@ -16,14 +16,14 @@ export default function UpdateCage() {
         description: '',
         createDate: dayjs().format('YYYY/MM/DD'),
         price: '',
-        filename: [],
+        filename: null,
+        filenames: []
     });
+
     const [isWidthValid, setIsWidthValid] = useState(true);
     const [isLengthValid, setIsLengthValid] = useState(true);
     const [isHeightValid, setIsHeightValid] = useState(true);
     const [error, setError] = useState(null);
-    const [imageID, setImageID] = useState('');
-    const [imgCage, setImgCage] = useState([]);
 
     const { id } = useParams();
     useEffect(() => {
@@ -32,9 +32,20 @@ export default function UpdateCage() {
             .then((response) => {
                 const dataCage = response.data.data.component;
                 console.log(dataCage);
-                setImageID(dataCage.image[0]._id);
-                console.log(imageID)
-                setCage(dataCage);
+                setCage({
+                    ...cage,
+                    name: dataCage.name,
+                    length: dataCage.length,
+                    width: dataCage.width,
+                    height: dataCage.height,
+                    inStock: dataCage.inStock,
+                    description: dataCage.description,
+                    createDate: dataCage.createDate,
+                    price: dataCage.price,
+                    filename: dataCage.imagePath,
+                    filenames: dataCage.image[0].imagePath,
+                });
+                console.log(dataCage.image[0].imagePath);
             })
             .catch((error) => {
                 console.error(error);
@@ -42,40 +53,9 @@ export default function UpdateCage() {
             });
     }, [id]);
 
-    useEffect(() => {
-        axios
-            .get(`http://localhost:5000/api/v1/image/${imageID}`)
-            .then((response) => {
-                const imgData = response.data.data.img;
-                if (imgData && imgData.imagePath) {
-                    console.log(imgData.imagePath);
-                    setImgCage(imgData.imagePath);
-                } else {
-                    setError('Image data or imagePath not found in the API response.');
-                }
-            })
-            .catch((error) => {
-                console.error(error);
-                setError('Unable to fetch Cage data.');
-            });
-    }, [imageID]);
-
-    const handleImageChange = (e) => {
-        const selectedImages = e.target.files;
-        const filename = [];
-
-        for (let i = 0; i < selectedImages.length; i++) {
-            const imagePath = URL.createObjectURL(selectedImages[i]);
-            filename.push(imagePath);
-        }
-
-        setCage((prevCage) => ({
-            ...prevCage,
-            imagePath: filename, // Assuming imagePath is an array to store multiple image paths
-        }));
-    };
     const handleChange = (e) => {
-        const { name, value } = e.target;
+        const { name, value, type, files } = e.target;
+
         // const newValue = name === 'delFlg' ? e.target.value === 'true' : value;
         if (name === 'width') {
             const isValid = value >= 30 && value <= 100;
@@ -91,25 +71,49 @@ export default function UpdateCage() {
             const isValid = value >= 30 && value <= 100;
             setIsHeightValid(isValid);
         }
-        setCage((prevCage) => ({
-            ...prevCage,
-            [name]: value
-        }));
+        if (type === 'file') {
+            // Handle file input separately
+            if (name === 'filename') {
+                setCage({ ...cage, filename: files[0] });
+            } else if (name === 'filenames') {
+                setCage({ ...cage, filenames: [...files] });
+            }
+        } else {
+            // Handle other input fields
+            setCage({ ...cage, [name]: value });
+        }
+        
     };
+
 
 
 
     const handleSubmit = (e) => {
         e.preventDefault();
+        console.log("Submit button clicked");
+        const formData = new FormData();
 
-        const updatedcage = {
-            ...cage,
-        };
+        formData.append('name', cage.name);
+        formData.append('length', cage.length);
+        formData.append('width', cage.width);
+        formData.append('height', cage.height);
+        formData.append('inStock', cage.inStock);
+        formData.append('description', cage.description);
+        formData.append('createDate', cage.createDate);
+        formData.append('price', cage.price);
+        formData.append('filename', cage.filename);
+        if (Array.isArray(cage.filenames) && cage.filenames.length > 0) {
+            for (let i = 0; i < cage.filenames.length; i++) {
+                formData.append('filenames', cage.filenames[i]);
+            }
+        }
 
         axios
-            .patch(`http://localhost:5000/api/v1/cage/${id}`, updatedcage)
+            .patch(`http://localhost:5000/api/v1/cage/${id}`, formData)
             .then(() => {
                 setOpen(true);
+                console.log('Data updated successfully');
+
             })
             .catch((error) => {
                 console.log(error);
@@ -249,51 +253,89 @@ export default function UpdateCage() {
 
 
                                 <div class="p-2 w-full">
-                                    {/* <div class="relative">
-                                        <label for="imagePath" class="leading-7 text-sm text-gray-600">Image Path</label>
-                                        <input type="text"
-                                            name="imagePath"
-                                            value={cage.imagePath}
-                                            onChange={handleChange}
-                                            class="w-full bg-gray-100 bg-opacity-50 rounded border border-gray-300 focus:border-indigo-500 focus:bg-white focus:ring-2 focus:ring-indigo-200 text-base outline-none text-gray-700 py-1 px-3 leading-8 transition-colors duration-200 ease-in-out" />
-                                    </div> */}
-                                    <div class="sm:col-span-3">
-                                        <label for="imagePath" class="block text-sm font-medium leading-6 text-gray-900">Main image</label>
-                                        <div class="mt-2">
-                                            <input
-                                                type="file"
-                                                name="imagePath"
-                                                accept="image/*" // Optional: specify accepted file types (images in this case)
-                                                onChange={handleImageChange}
-                                                required
-
-                                                autoComplete="Image Path"
-                                                className="block p-2 w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
-                                            />
-                                        </div>
-                                    </div>
-                                   
-                                        <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-                                            <div class="mx-auto max-w-2xl py-10 sm:py-12 lg:max-w-none lg:py-16">
-                                                <div >
-                                                    <div class="relative h-full w-full overflow-hidden rounded-lg bg-white sm:aspect-h-1 sm:aspect-w-2 lg:aspect-h-1 lg:aspect-w-1 group-hover:opacity-75 sm:h-64">
-                                                        <img src={cage.imagePath} alt='Main image' class="h-full w-full object-contain object-center" />
+                                    <div class="p-2 w-full">
+                                        <div class="col-span-full">
+                                            <label for="filename" class="block text-sm font-medium leading-6 text-gray-900">Main image</label>
+                                            <div class="mt-2 flex justify-center rounded-lg border border-dashed border-gray-900/25 px-2 py-2">
+                                                <div class="text-center">
+                                                    <div class="mt-1 flex text-sm leading-6 text-gray-600">
+                                                        <label for="filename" class="relative cursor-pointer rounded-md bg-white font-semibold text-indigo-600 focus-within:outline-none focus-within:ring-2 focus-within:ring-indigo-600 focus-within:ring-offset-2 hover:text-indigo-500">
+                                                            <span>Upload a file</span>
+                                                            <input id="filename"
+                                                                type="file"
+                                                                name="filename"
+                                                                accept="image/*"
+                                                                onChange={handleChange}
+                                                                class="sr-only" />
+                                                        </label>
+                                                        <p class="pl-1">or drag and drop</p>
                                                     </div>
                                                 </div>
-                                                <h2 class="text-2xl font-bold text-gray-900">Extra images</h2>
-                                                <div class="mt-6 space-y-12 lg:grid lg:grid-cols-3 lg:gap-x-6 lg:space-y-0">
-                                                    {imgCage.map((image, index) => (
-                                                        <div class="group relative" key={index}>
-                                                            <div class="relative h-80 w-full overflow-hidden rounded-lg bg-white sm:aspect-h-1 sm:aspect-w-2 lg:aspect-h-1 lg:aspect-w-1 group-hover:opacity-75 sm:h-64">
-                                                                <img src={image} alt={`Image ${index}`} class="h-full w-full object-contain object-center" />
+                                            </div>
+                                            {/* {newCage.filenames[0] && ( */}
+                                            <div>
+                                                <h2 class="pl-1">Selected Main Image:</h2>
+                                                <div className="image-preview">
+                                                    <div className="flex flex-wrap -m-4 text-center">
+                                                        <div className="p-4 md:w-1/4 sm:w-1/2 w-full">
+                                                            <div className="border-2 border-gray-200 px-4 py-2 rounded-lg">
+                                                                <img
+                                                                    src={cage.filename}
+                                                                    alt="Main Image"
+                                                                    className="rounded-lg w-full h-20 object-cover object-center mb-3"
+                                                                />
                                                             </div>
                                                         </div>
-                                                    ))}
+                                                    </div>
                                                 </div>
                                             </div>
+                                            {/* )} */}
                                         </div>
-                                
-
+                                    </div>
+                                    <div class="p-2 w-full">
+                                        <div class="col-span-full">
+                                            <label for="filenames" class="block text-sm font-medium leading-6 text-gray-900">Extra images</label>
+                                            <div class="mt-2 flex justify-center rounded-lg border border-dashed border-gray-900/25 px-2 py-2">
+                                                <div class="text-center">
+                                                    <div class="mt-1 flex text-sm leading-6 text-gray-600">
+                                                        <label for="filenames" class="relative cursor-pointer rounded-md bg-white font-semibold text-indigo-600 focus-within:outline-none focus-within:ring-2 focus-within:ring-indigo-600 focus-within:ring-offset-2 hover:text-indigo-500">
+                                                            <span>Upload a file</span>
+                                                            <input id="filenames"
+                                                                type="file"
+                                                                name="filenames"
+                                                                accept="image/*"
+                                                                multiple
+                                                                onChange={handleChange}
+                                                                class="sr-only" />
+                                                        </label>
+                                                        <p class="pl-1">or drag and drop</p>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            {cage.filenames.length > 0 && (
+                                            <div>
+                                                <h2 class="pl-1">Selected Extra Images:</h2>
+                                                <div className="image-preview">
+                                                    <div className="flex flex-wrap -m-4 text-center">
+                                                    {cage.filenames.map((image, index) => (
+                                                        <div className="p-4 md:w-1/4 sm:w-1/2 w-full"
+                                                        key={index}
+                                                        >
+                                                            <div className="border-2 border-gray-200 px-4 py-2 rounded-lg">
+                                                                <img
+                                                                    src={image}
+                                                                    alt={`Image ${index + 1}`}
+                                                                    className="flex-shrink-0 rounded-lg w-full h-20 object-cover object-center mb-3"
+                                                                />
+                                                            </div>
+                                                        </div>
+                                                        ))} 
+                                                    </div>
+                                                </div>
+                                            </div>
+                                             )} 
+                                        </div>
+                                    </div>
                                 </div>
                                 <div class="p-2 w-full">
                                     <button type='submit' class="flex mx-auto text-white bg-indigo-500 border-0 py-2 px-8 focus:outline-none hover:bg-indigo-600 rounded text-lg">Update</button>

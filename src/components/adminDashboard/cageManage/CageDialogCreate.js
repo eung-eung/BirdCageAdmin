@@ -45,7 +45,7 @@ export default function CageDialogCreate() {
 
     const handleClose = () => {
         setOpen(false);
-        setSuccessDialogOpen(false); 
+        setSuccessDialogOpen(false);
         setNewCage(initialCageState);
     };
 
@@ -69,8 +69,8 @@ export default function CageDialogCreate() {
             filenames: [prevCage.filenames[0], ...prevCage.filenames.slice(1), ...selectedFiles],
         }));
     };
-    
-    
+
+
 
     const handleChange = (e) => {
         const { name, value } = e.target;
@@ -95,26 +95,26 @@ export default function CageDialogCreate() {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-    
+
         const formData = new FormData();
-    
+
         // Append fields from newCage to formData
         for (const key in newCage) {
             formData.append(key, newCage[key]);
         }
-    
+
         // Append the image files
         for (const file of newCage.filenames) {
             formData.append('filenames', file);
         }
-    
+
         try {
             // Make a POST request to your API endpoint with formData
             const response = await fetch('http://localhost:5000/api/v1/cage', {
                 method: 'POST',
                 body: formData,
             });
-    
+
             if (response.status === 201) {
                 console.log('Cage created successfully');
                 setSuccessDialogOpen(true);
@@ -251,75 +251,75 @@ export default function CageDialogCreate() {
                                         </div>
                                     </div>
                                     <div class="p-2 w-full">
-    <div class="col-span-full">
-        <label for="mainImage" class="block text-sm font-medium leading-6 text-gray-900">Main image</label>
-        <div class="mt-2 flex justify-center rounded-lg border border-dashed border-gray-900/25 px-2 py-2">
-            <div class="text-center">
-                <div class="mt-1 flex text-sm leading-6 text-gray-600">
-                    <label for="mainImage" class="relative cursor-pointer rounded-md bg-white font-semibold text-indigo-600 focus-within:outline-none focus-within:ring-2 focus-within:ring-indigo-600 focus-within:ring-offset-2 hover:text-indigo-500">
-                        <span>Upload a file</span>
-                        <input id="mainImage" type="file" name="mainImage" onChange={handleMainImageChange} class="sr-only" />
-                    </label>
-                    <p class="pl-1">or drag and drop</p>
-                </div>
-            </div>
-        </div>
-        {newCage.filenames[0] && (
-            <div>
-                <h2 class="pl-1">Selected Main Image:</h2>
-                <div className="image-preview">
-                    <div className="flex flex-wrap -m-4 text-center">
-                        <div className="p-4 md:w-1/4 sm:w-1/2 w-full">
-                            <div className="border-2 border-gray-200 px-4 py-2 rounded-lg">
-                                <img
-                                    src={URL.createObjectURL(newCage.filenames[0])}
-                                    alt="Main Image"
-                                    className="rounded-lg w-full h-20 object-cover object-center mb-3"
-                                />
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        )}
-    </div>
-</div>
-<div class="p-2 w-full">
-    <div class="col-span-full">
-        <label for="extraImages" class="block text-sm font-medium leading-6 text-gray-900">Extra images</label>
-        <div class="mt-2 flex justify-center rounded-lg border border-dashed border-gray-900/25 px-2 py-2">
-            <div class="text-center">
-                <div class="mt-1 flex text-sm leading-6 text-gray-600">
-                    <label for="extraImages" class="relative cursor-pointer rounded-md bg-white font-semibold text-indigo-600 focus-within:outline-none focus-within:ring-2 focus-within:ring-indigo-600 focus-within:ring-offset-2 hover:text-indigo-500">
-                        <span>Upload a file</span>
-                        <input id="extraImages" type="file" name="extraImages" multiple onChange={handleExtraImagesChange} class="sr-only" />
-                    </label>
-                    <p class="pl-1">or drag and drop</p>
-                </div>
-            </div>
-        </div>
-        {newCage.filenames.length > 1 && (
-            <div>
-                <h2 class="pl-1">Selected Extra Images:</h2>
-                <div className="image-preview">
-                    <div className="flex flex-wrap -m-4 text-center">
-                        {newCage.filenames.slice(1).map((image, index) => (
-                            <div className="p-4 md:w-1/4 sm:w-1/2 w-full" key={index}>
-                                <div className="border-2 border-gray-200 px-4 py-2 rounded-lg">
-                                    <img
-                                        src={URL.createObjectURL(image)}
-                                        alt={`Image ${index + 1}`}
-                                        className="flex-shrink-0 rounded-lg w-full h-20 object-cover object-center mb-3"
-                                    />
-                                </div>
-                            </div>
-                        ))}
-                    </div>
-                </div>
-            </div>
-        )}
-    </div>
-</div>
+                                        <div class="col-span-full">
+                                            <label for="mainImage" class="block text-sm font-medium leading-6 text-gray-900">Main image</label>
+                                            <div class="mt-2 flex justify-center rounded-lg border border-dashed border-gray-900/25 px-2 py-2">
+                                                <div class="text-center">
+                                                    <div class="mt-1 flex text-sm leading-6 text-gray-600">
+                                                        <label for="mainImage" class="relative cursor-pointer rounded-md bg-white font-semibold text-indigo-600 focus-within:outline-none focus-within:ring-2 focus-within:ring-indigo-600 focus-within:ring-offset-2 hover:text-indigo-500">
+                                                            <span>Upload a file</span>
+                                                            <input id="mainImage" type="file" name="mainImage" onChange={handleMainImageChange} class="sr-only" />
+                                                        </label>
+                                                        <p class="pl-1">or drag and drop</p>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            {newCage.filenames[0] && (
+                                                <div>
+                                                    <h2 class="pl-1">Selected Main Image:</h2>
+                                                    <div className="image-preview">
+                                                        <div className="flex flex-wrap -m-4 text-center">
+                                                            <div className="p-4 md:w-1/4 sm:w-1/2 w-full">
+                                                                <div className="border-2 border-gray-200 px-4 py-2 rounded-lg">
+                                                                    <img
+                                                                        src={URL.createObjectURL(newCage.filenames[0])}
+                                                                        alt="Main Image"
+                                                                        className="rounded-lg w-full h-20 object-cover object-center mb-3"
+                                                                    />
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            )}
+                                        </div>
+                                    </div>
+                                    <div class="p-2 w-full">
+                                        <div class="col-span-full">
+                                            <label for="extraImages" class="block text-sm font-medium leading-6 text-gray-900">Extra images</label>
+                                            <div class="mt-2 flex justify-center rounded-lg border border-dashed border-gray-900/25 px-2 py-2">
+                                                <div class="text-center">
+                                                    <div class="mt-1 flex text-sm leading-6 text-gray-600">
+                                                        <label for="extraImages" class="relative cursor-pointer rounded-md bg-white font-semibold text-indigo-600 focus-within:outline-none focus-within:ring-2 focus-within:ring-indigo-600 focus-within:ring-offset-2 hover:text-indigo-500">
+                                                            <span>Upload a file</span>
+                                                            <input id="extraImages" type="file" name="extraImages" multiple onChange={handleExtraImagesChange} class="sr-only" />
+                                                        </label>
+                                                        <p class="pl-1">or drag and drop</p>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            {newCage.filenames.length > 1 && (
+                                                <div>
+                                                    <h2 class="pl-1">Selected Extra Images:</h2>
+                                                    <div className="image-preview">
+                                                        <div className="flex flex-wrap -m-4 text-center">
+                                                            {newCage.filenames.slice(1).map((image, index) => (
+                                                                <div className="p-4 md:w-1/4 sm:w-1/2 w-full" key={index}>
+                                                                    <div className="border-2 border-gray-200 px-4 py-2 rounded-lg">
+                                                                        <img
+                                                                            src={URL.createObjectURL(image)}
+                                                                            alt={`Image ${index + 1}`}
+                                                                            className="flex-shrink-0 rounded-lg w-full h-20 object-cover object-center mb-3"
+                                                                        />
+                                                                    </div>
+                                                                </div>
+                                                            ))}
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            )}
+                                        </div>
+                                    </div>
 
                                     <div class="p-2 w-full">
 
@@ -347,28 +347,28 @@ export default function CageDialogCreate() {
 
             </BootstrapDialog >
             <Dialog
-        open={successDialogOpen} 
-        onClose={handleClose}
-        aria-labelledby="alert-dialog-title"
-        aria-describedby="alert-dialog-description"
-      >
-        <DialogTitle id="alert-dialog-title">
-          {"You have created a new cage"}
-        </DialogTitle>
-        <DialogContent>
-          <DialogContentText id="alert-dialog-description">
-          <Alert severity="success">
-        <AlertTitle>Success</AlertTitle>
-         <strong>Create successfully!</strong>
-      </Alert>
-          </DialogContentText>
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={handleClose} color="primary">
-            Close
-          </Button>
-        </DialogActions>
-      </Dialog>
+                open={successDialogOpen}
+                onClose={handleClose}
+                aria-labelledby="alert-dialog-title"
+                aria-describedby="alert-dialog-description"
+            >
+                <DialogTitle id="alert-dialog-title">
+                    {"You have created a new cage"}
+                </DialogTitle>
+                <DialogContent>
+                    <DialogContentText id="alert-dialog-description">
+                        <Alert severity="success">
+                            <AlertTitle>Success</AlertTitle>
+                            <strong>Create successfully!</strong>
+                        </Alert>
+                    </DialogContentText>
+                </DialogContent>
+                <DialogActions>
+                    <Button onClick={handleClose} color="primary">
+                        Close
+                    </Button>
+                </DialogActions>
+            </Dialog>
         </>
     );
 }

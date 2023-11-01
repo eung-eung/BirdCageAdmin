@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { DataGrid } from '@mui/x-data-grid';
-import { Button, Dialog, DialogContent, DialogTitle, IconButton, TextField, Typography } from '@mui/material'; // Import the necessary components
+import { Alert, Button, Dialog, DialogContent, DialogTitle, IconButton, TextField, Typography } from '@mui/material'; // Import the necessary components
 import DialogViewDetail from './DialogViewDetail';
 import { DialogActions, DialogContentText } from '@mui/material';
 import VisibilityIcon from '@mui/icons-material/Visibility';
@@ -84,8 +84,14 @@ export default function TableCage() {
     })
       .then((response) => {
         if (response.ok) {
-          const updatedCages = cages.filter((c) => c._id !== cage._id);
-          setCages(updatedCages);
+          setCages((prevCages) =>
+          prevCages.map((c) =>
+            c._id === cage._id ? { ...c, delFlg: true } : c
+          )
+        );
+        console.log('Delete successfully!');
+        setDeleteDialogOpen(false);
+          console.log('Delete successfully!')
           setDeleteDialogOpen(false)
         }
       })
@@ -98,18 +104,23 @@ export default function TableCage() {
 
 
   const columns = [
-    { field: 'name', headerName: 'Name', width: 750 },
+    { field: 'name', headerName: 'Name', width: 720 },
     { field: 'price', headerName: 'Price', width: 100 },
     {
       field: 'actions',
       headerName: 'Actions',
-      width: 180,
+      width: 200,
       renderCell: (params) => (
         <div>
-          <Button variant="text" onClick={() => openDataDialog(params.row)}><VisibilityIcon /></Button>
-          <Button variant="text" ><Link to={`/update/${params.row._id}`}><ModeEditIcon /></Link></Button>
+        <Button variant="text" onClick={() => openDataDialog(params.row)}><VisibilityIcon /></Button>
+        <Button variant="text" ><Link to={`/update/${params.row._id}`}><ModeEditIcon /></Link></Button>
+        {params.row.delFlg ? (
+         <span style={{ color: '#7D7C7C', fontStyle: 'italic' }}>Deleted</span>
+        ) : (
           <Button variant="text" onClick={() => openDeleteDialog(params.row)}><DeleteIcon /></Button>
-        </div>
+        )}
+      </div>
+        
       ),
     },
 
