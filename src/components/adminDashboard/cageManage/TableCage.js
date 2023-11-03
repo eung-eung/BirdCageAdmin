@@ -158,7 +158,6 @@ export default function TableCage() {
           },
         }}
         pageSizeOptions={[5, 10]}
-        checkboxSelection
         rowHeight={100}
       />
 
