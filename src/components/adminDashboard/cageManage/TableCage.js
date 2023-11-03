@@ -126,12 +126,15 @@ export default function TableCage() {
       width: 200,
       renderCell: (params) => (
         <div>
-          <Button variant="text" onClick={() => openDataDialog(params.row)}><VisibilityIcon /></Button>
-          <Button variant="text" ><Link to={`/update/${params.row._id}`}><ModeEditIcon /></Link></Button>
+          
           {params.row.delFlg ? (
             <span style={{ color: '#7D7C7C', fontStyle: 'italic' }}>Deleted</span>
           ) : (
+            <div>
+            <Button variant="text" onClick={() => openDataDialog(params.row)}><VisibilityIcon /></Button>
+          <Button variant="text" ><Link to={`/update/${params.row._id}`}><ModeEditIcon /></Link></Button>
             <Button variant="text" onClick={() => openDeleteDialog(params.row)}><DeleteIcon /></Button>
+            </div>
           )}
         </div>
 
