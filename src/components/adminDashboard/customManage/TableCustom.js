@@ -76,9 +76,7 @@ export default function TableCustom() {
                 setRows(cages);
             });
     }, [eventRefresh]);
-    const handleCallback = () => {
-        setEventRefresh(prev => !prev)
-    }
+
     const [status, setStatus] = useState("");
     useEffect(() => {
         socket.on("receive_request_custom_cage", (d) => {
@@ -97,6 +95,7 @@ export default function TableCustom() {
             body: JSON.stringify(data),
         }).then(() => {
             setEventRefresh(prev => !prev)
+            socket.emit('accept_custom', { status: "CUS" })
         })
     };
     const handleAccept = (row) => {
@@ -194,7 +193,6 @@ export default function TableCustom() {
                         </Button>
                         <Button onClick={() => {
                             handleDecline(params.row.id)
-                            handleCallback()
                         }} value={params.row.id} variant="outlined">
                             Decline
                         </Button>
