@@ -35,7 +35,7 @@ export default function TableCage() {
           'Content-Type': 'application/json',
         },
       });
-  
+
       if (response.ok) {
         const data = await response.json();
         console.log(data); // Log the data
@@ -142,14 +142,14 @@ export default function TableCage() {
 
 
   return (
-    <div style={{ height: 400, marginLeft: "300px", marginTop: "50px" }}>
+    <div style={{ height: "75vh", marginLeft: "300px", marginTop: "50px", marginBottom: "100px" }}>
       <DataGrid
         rows={cages}
         columns={columns}
         getRowId={getRowId}
         initialState={{
           pagination: {
-            paginationModel: { page: 0, pageSize: 5 },
+            paginationModel: { page: 0, pageSize: 10 },
           },
         }}
         pageSizeOptions={[5, 10]}
