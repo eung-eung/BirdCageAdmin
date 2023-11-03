@@ -107,27 +107,27 @@ export default function CanceledTable({ data }) {
                 );
             },
         },
-        {
-            field: "updateStatus",
-            headerName: "Update status",
-            width: 200,
-            renderCell: (params) => {
-                return (
-                    <div>
-                        <Button
-                            variant="contained"
-                            style={{
-                                marginRight: "10px",
-                                backgroundColor: "#EF6262",
-                                color: "white",
-                            }}
-                        >
-                            ...
-                        </Button>
-                    </div>
-                );
-            },
-        },
+        // {
+        //     field: "updateStatus",
+        //     headerName: "Update status",
+        //     width: 200,
+        //     renderCell: (params) => {
+        //         return (
+        //             <div>
+        //                 <Button
+        //                     variant="contained"
+        //                     style={{
+        //                         marginRight: "10px",
+        //                         backgroundColor: "#EF6262",
+        //                         color: "white",
+        //                     }}
+        //                 >
+        //                     ...
+        //                 </Button>
+        //             </div>
+        //         );
+        //     },
+        // },
     ];
     return (
         <div style={{ height: 400, marginLeft: "300px", marginTop: "100px" }}>
@@ -141,7 +141,6 @@ export default function CanceledTable({ data }) {
                 columns={columns}
                 getRowId={getRowId}
                 pageSize={5}
-                checkboxSelection
                 initialState={{
                     pagination: {
                         paginationModel: { page: 0, pageSize: 5 },

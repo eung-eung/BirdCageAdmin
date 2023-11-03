@@ -12,6 +12,7 @@ export default function Orders() {
     const [deliveringOrder, setDeliveringOrder] = useState([]);
     const [completedOrder, setCompletedOrder] = useState([]);
     const [canceledOrder, setCanceledOrder] = useState([]);
+    const [eventRefresh, setEventRefresh] = useState(false)
     useEffect(() => {
         fetch("http://localhost:5000/api/v1/order", {
             method: "GET",
@@ -45,7 +46,13 @@ export default function Orders() {
                     }
                 }
             });
-    }, []);
+    }, [eventRefresh]);
+    const handleRefresh = () => {
+        console.log("a")
+        setEventRefresh(prev => !prev)
+
+    }
+
     console.log(canceledOrder)
     return (
         <div style={{ marginTop: "80px" }} className="service-container">
@@ -55,7 +62,7 @@ export default function Orders() {
                 </h1>
             </div>
             <div className="service-content">
-                <ProcessingTable data={processingOrder} />
+                <ProcessingTable handleCallback={handleRefresh} data={processingOrder} />
             </div>
             <div className="service-title">
                 <h1 className="mt-2 text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl">
@@ -63,7 +70,7 @@ export default function Orders() {
                 </h1>
             </div>
             <div className="service-content">
-                <DeliveringTable data={deliveringOrder} />
+                <DeliveringTable handleCallback={handleRefresh} data={deliveringOrder} />
             </div>
             <div className="service-title">
                 <h1 className="mt-2 text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl">

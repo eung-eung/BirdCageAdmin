@@ -11,7 +11,7 @@ import VisibilityIcon from "@mui/icons-material/Visibility";
 import DetailOrder from "../detailOrder/DetailOrder";
 import { handleUpdateOrderStatus } from "../utils/orderStatusUtil";
 
-export default function ProcessingTable({ data }) {
+export default function ProcessingTable({ data, handleCallback }) {
     const getRowId = (row) => row._id;
 
     const [rows, setRows] = useState([]);
@@ -62,8 +62,10 @@ export default function ProcessingTable({ data }) {
                     <div>
                         <Button
                             variant="contained"
-                            onClick={() =>
+                            onClick={() => {
+                                handleCallback()
                                 handleUpdateOrderStatus("Delivering", params.row._id)
+                            }
                             }
 
                             style={{
@@ -92,7 +94,7 @@ export default function ProcessingTable({ data }) {
                         outline: "none !important",
                     },
                 }}
-                checkboxSelection
+
                 initialState={{
                     pagination: {
                         paginationModel: { page: 0, pageSize: 5 },

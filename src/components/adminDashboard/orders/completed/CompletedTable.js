@@ -105,20 +105,20 @@ export default function CompletedTable({ data }) {
                 );
             },
         },
-        {
-            field: 'updateStatus',
-            headerName: 'Update status',
-            width: 200,
-            renderCell: (params) => {
-                return (
-                    <div>
-                        <Button variant="contained" style={{ marginRight: "10px", backgroundColor: '#4D4C7D', color: 'white' }}>
-                            ...
-                        </Button>
-                    </div>
-                );
-            },
-        },
+        // {
+        //     field: 'updateStatus',
+        //     headerName: 'Update status',
+        //     width: 200,
+        //     renderCell: (params) => {
+        //         return (
+        //             <div>
+        //                 <Button variant="contained" style={{ marginRight: "10px", backgroundColor: '#4D4C7D', color: 'white' }}>
+        //                     ...
+        //                 </Button>
+        //             </div>
+        //         );
+        //     },
+        // },
     ];
     return (
         <div style={{ height: 400, marginLeft: "300px", marginTop: "100px" }}>
@@ -132,7 +132,6 @@ export default function CompletedTable({ data }) {
                         outline: "none !important",
                     },
                 }}
-                checkboxSelection
                 initialState={{
                     pagination: {
                         paginationModel: { page: 0, pageSize: 5 },

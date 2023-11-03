@@ -1,6 +1,6 @@
-export const handleUpdateOrderStatus = (status, id) =>{
+export const handleUpdateOrderStatus = (status, id) => {
     return fetch("http://localhost:5000/api/v1/order/updateStatus/" + id, {
-        method: "PATCH", 
+        method: "PATCH",
         body: JSON.stringify({
             status: status
         }),
