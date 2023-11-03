@@ -1,4 +1,4 @@
-import React from 'react'
+import React, {useState, useEffect} from 'react'
 import Header from '../header/Header'
 import ProcessingTable from './processing/ProcessingTable'
 import { Button } from '@mui/material'
@@ -8,32 +8,79 @@ import CompletedTable from './completed/CompletedTable'
 import CanceledTable from './canceled/CanceledTable'
 
 export default function Orders() {
+    const [processingOrder, setProcessingOrder] = useState([]);
+    const [deliveringOrder, setDeliveringOrder] = useState([]);
+    const [completedOrder, setCompletedOrder] = useState([]);
+    const [canceledOrder, setCanceledOrder] = useState([]);
+    useEffect(() => {
+        fetch("http://localhost:5000/api/v1/order", {
+            method: "GET",
+            headers: {
+                "Content-Type": "application/json",
+            },
+        })
+            .then((res) => res.json())
+            .then((result) => {
+                const data = result.orderByStatus;
+                for (const [key, value] of Object.entries(data)) {
+                    for (let i = 0; i < value.length; i++) {
+                        console.log(`${value[i]._id + "    " + value[i]?.customer[0]?.account[0]?.phoneNumber}`)
+                        value[i].phoneNumber =  value[i]?.customer[0]?.account[0]?.phoneNumber;
+                    }
+                    switch (key) {
+                        case "Processing":
+                            setProcessingOrder(value);
+                            break;
+                        case "Delivering":
+                            setDeliveringOrder(value);
+                            break;
+                        case "Completed":
+                            setCompletedOrder(value);
+                            break;
+                        case "Canceled":
+                            setCanceledOrder(value);
+                            break; 
+                        default:
+                            break;
+                    }
+                }
+            });
+    }, []);
+    console.log(canceledOrder)
     return (
-        <div style={{ marginTop: "80px" }} className='service-container'>
-            <div className='service-title'>
-                <h1 class="mt-2 text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl">Processing orders</h1>
-            </div>
-            <div className='service-content'>
-                <ProcessingTable />
-             
-            </div>
-            <div className='service-title'>
-            <h1 class="mt-2 text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl">Delivering orders</h1>
-            </div>
-            <div className='service-content'>
-                <DeliveringTable/>
-            </div>
-            <div className='service-title'>
-            <h1 class="mt-2 text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl">Completed orders</h1>            </div>
-            <div className='service-content'>
-                <CompletedTable/>
-            </div>
-            <div className='service-title'>
-            <h1 class="mt-2 text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl">Canceled orders</h1>
-            </div>
-            <div className='service-content' style={{marginBottom: '100px'}}>
-                <CanceledTable />
-            </div>
+        <div style={{ marginTop: "80px" }} className="service-container">
+        <div className="service-title">
+            <h1 className="mt-2 text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl">
+                Processing orders
+            </h1>
         </div>
+        <div className="service-content">
+            <ProcessingTable data={processingOrder} />
+        </div>
+        <div className="service-title">
+            <h1 className="mt-2 text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl">
+                Delivering orders
+            </h1>
+        </div>
+        <div className="service-content">
+            <DeliveringTable data={deliveringOrder}/>
+        </div>
+        <div className="service-title">
+            <h1 className="mt-2 text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl">
+                Completed orders
+            </h1>{" "}
+        </div>
+        <div className="service-content">
+            <CompletedTable data={completedOrder} />
+        </div>
+        <div className="service-title">
+            <h1 className="mt-2 text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl">
+                Canceled orders
+            </h1>
+        </div>
+        <div className="service-content" style={{ marginBottom: "100px" }}>
+            <CanceledTable data={canceledOrder} />
+        </div>
+    </div>
     )
 }
