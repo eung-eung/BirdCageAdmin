@@ -19,7 +19,7 @@ const BootstrapDialog = styled(Dialog)(({ theme }) => ({
     },
 }));
 
-export default function CageDialogCreate() {
+export default function CageDialogCreate({ handleCallback }) {
     const initialCageState = {
         name: '',
         length: '',
@@ -392,7 +392,10 @@ export default function CageDialogCreate() {
                     </DialogContentText>
                 </DialogContent>
                 <DialogActions>
-                    <Button onClick={handleClose} color="primary">
+                    <Button onClick={() => {
+                        handleClose()
+                        handleCallback()
+                    }} color="primary">
                         Close
                     </Button>
                 </DialogActions>

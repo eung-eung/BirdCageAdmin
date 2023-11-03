@@ -14,7 +14,7 @@ import UseToken from '../../handleToken/UseToken';
 
 
 
-export default function TableCage() {
+export default function TableCage({ eventRefresh }) {
   const getRowId = (row) => row._id;
   const { getToken } = UseToken();
   const [dataDialogOpen, setCagesDialogOpen] = useState(false)
@@ -35,7 +35,7 @@ export default function TableCage() {
           'Content-Type': 'application/json',
         },
       });
-  
+
       if (response.ok) {
         const data = await response.json();
         console.log(data); // Log the data
@@ -51,7 +51,7 @@ export default function TableCage() {
 
   useEffect(() => {
     fetchCages();
-  }, []);
+  }, [eventRefresh]);
 
   if (loading) {
     return <div>Loading...</div>;
@@ -145,18 +145,22 @@ export default function TableCage() {
 
 
   return (
-    <div style={{ height: 400, marginLeft: "300px", marginTop: "50px" }}>
+    <div style={{ height: "75vh", marginLeft: "300px", marginTop: "50px", marginBottom: "100px" }}>
       <DataGrid
         rows={cages}
         columns={columns}
         getRowId={getRowId}
+        sx={{
+          "&.MuiDataGrid-root .MuiDataGrid-cell:focus-within": {
+            outline: "none !important",
+          },
+        }}
         initialState={{
           pagination: {
-            paginationModel: { page: 0, pageSize: 5 },
+            paginationModel: { page: 0, pageSize: 10 },
           },
         }}
         pageSizeOptions={[5, 10]}
-        checkboxSelection
         rowHeight={100}
       />
 

@@ -1,9 +1,13 @@
-import React from 'react'
+import React, { useState } from 'react'
 import "./CageManage.css"
 import { Button } from "@mui/material"
 import CageDialogCreate from './CageDialogCreate';
 import TableCage from './TableCage';
 export default function CageManage() {
+    const [eventRefresh, setEventRefresh] = useState(false)
+    const handleEventRefresh = () => {
+        setEventRefresh(prev => !prev)
+    }
     return (
         <div style={{ marginTop: "80px" }} className='service-container'>
             <div className='service-title'>
@@ -12,7 +16,7 @@ export default function CageManage() {
             <div className='service-content'>
                 <div className='service-action'>
                     <div className='service-action-btn'>
-                        <CageDialogCreate />
+                        <CageDialogCreate handleCallback={handleEventRefresh} />
                         <div>
                             <Button id='delete' variant="outlined" color="error">
                                 Delete
@@ -20,7 +24,7 @@ export default function CageManage() {
                         </div>
                     </div>
                 </div>
-                <TableCage />
+                <TableCage eventRefresh={eventRefresh} />
                 <div>
                 </div>
             </div>
