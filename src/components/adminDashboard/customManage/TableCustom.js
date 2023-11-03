@@ -121,13 +121,26 @@ export default function TableCustom() {
             socket.emit('accept_custom', { status: "CUS" })
         })
     };
-    const handleAccept = (row) => {
-        // const updatedRows = rows.map((r) => (r.id === row.id ? { ...r, status: 'Accepted' } : r));
-        // setRows(updatedRows);
-        const currentRowId = row.target.value;
-        changeOrderStatus(currentRowId, { status: "CUS", price: initalPrice, description: initDescription });
-        setEventRefresh(prev => !prev)
+
+    const handleAccept = () => {
+        if (selectedRowId) {
+            const currentRowId = selectedRowId;
+            const currentRow = rows.find(row => row.id === currentRowId);
+            if (currentRow) {
+                const parsedPrice = parseFloat(price);
+                if (parsedPrice >= 0) {
+                    changeOrderStatus(currentRow.id, { status: "CUS", price, description });
+                    setEventRefresh(prev => !prev);
+                    setIsOpen(false);
+                    setPriceError(""); 
+                } else {
+                    
+                    setPriceError("Price should be greater than or equal to 0");
+                }
+            }
+        }
     };
+    
 
     const handleDecline = (id) => {
 
