@@ -95,14 +95,16 @@ export default function TableCustom() {
                 Authorization: "Bearer " + getToken(),
             },
             body: JSON.stringify(data),
-        });
+        }).then(() => {
+            setEventRefresh(prev => !prev)
+        })
     };
     const handleAccept = (row) => {
         // const updatedRows = rows.map((r) => (r.id === row.id ? { ...r, status: 'Accepted' } : r));
         // setRows(updatedRows);
         const currentRowId = row.target.value;
         changeOrderStatus(currentRowId, { status: "CUS", price: initalPrice, description: initDescription });
-        setEventRefresh(prev => !prev)
+
     };
 
     const handleDecline = (id) => {
