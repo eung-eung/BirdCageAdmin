@@ -183,7 +183,7 @@ export default function TableCustom() {
                         >
                             Accept
                         </Button>
-                        <Button onClick={handleDecline} variant="outlined">
+                        <Button onClick={handleDecline} value={params.row.id} variant="outlined">
                             Decline
                         </Button>
                     </div>
