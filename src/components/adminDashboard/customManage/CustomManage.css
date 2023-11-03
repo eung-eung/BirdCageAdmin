@@ -1,0 +1,48 @@
+.service-container {
+    margin-right: 100px;
+}
+
+.service-container .service-title {
+    width: 100%;
+    padding-left: 300px;
+    margin-top: 50px;
+    position: relative;
+    top: 80px
+}
+
+.service-action {
+    margin-top: 20px;
+    display: flex;
+    margin-left: 300px;
+    justify-content: space-between;
+}
+
+.service-action-btn {
+    flex: 1;
+    text-align: right;
+}
+
+.search-input {
+    width: 500px !important;
+    border: 1px solid #dddddd !important;
+    outline: none;
+}
+
+.search-input:focus {
+    outline: none !important;
+}
+
+
+#create {
+    width: 40%;
+    margin-bottom: 20px;
+}
+
+#select-all {
+    width: 18%;
+    margin-right: 4%;
+}
+
+#delete {
+    width: 18%;
+}

@@ -1,64 +1,28 @@
 import React from 'react'
 import "./CageManage.css"
-import Box from '@mui/material/Box';
-import Input from '@mui/material/Input';
-import InputLabel from '@mui/material/InputLabel';
-import InputAdornment from '@mui/material/InputAdornment';
-import FormControl from '@mui/material/FormControl';
-import TextField from '@mui/material/TextField';
-import SearchIcon from '@mui/icons-material/Search';
 import { Button } from "@mui/material"
-import ControlPointIcon from '@mui/icons-material/ControlPoint';
 import CageDialogCreate from './CageDialogCreate';
 import TableCage from './TableCage';
 export default function CageManage() {
     return (
         <div style={{ marginTop: "80px" }} className='service-container'>
             <div className='service-title'>
-                <h3 style={{ textAlign: "left" }}>Cages Management</h3>
+                <h2 style={{ textAlign: "left", fontWeight: 'bold' }}>Cages Management</h2>
             </div>
             <div className='service-content'>
                 <div className='service-action'>
-
-                    {/* <Box style={{ flex: "1", textAlign: "left" }} sx={{ '& > :not(style)': { m: 1 }, '.MuiOutlinedInput-notchedOutline': { border: 0 } }} >
-                        <TextField
-                            id="input-with-icon-textfield" className='search-input'
-
-                            InputProps={{
-                                disableUnderline: true,
-                                startAdornment: (
-                                    <InputAdornment position="start">
-                                        <SearchIcon />
-                                    </InputAdornment>
-                                ),
-                            }}
-                            variant="standard"
-                        />
-                    </Box> */}
-
                     <div className='service-action-btn'>
-                        {/* <Button
-                            id='create'
-                            variant="contained">
-                            <ControlPointIcon /> New Service
-                        </Button> */}
                         <CageDialogCreate />
                         <div>
-                            {/* <Button id='select-all' variant="outlined">Select all</Button> */}
                             <Button id='delete' variant="outlined" color="error">
                                 Delete
                             </Button>
                         </div>
                     </div>
-
                 </div>
-
                 <TableCage />
-
                 <div>
-
                 </div>
-
             </div>
         </div>
     )

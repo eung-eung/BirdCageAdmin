@@ -12,6 +12,7 @@ import CustomManage from './components/adminDashboard/customManage/CustomManage'
 import UpdateCage from './components/adminDashboard/cageManage/UpdateCage';
 import Logout from './components/logout/Logout';
 import ProtectedRoute from './components/protectedRoute/ProtectedRoute';
+// import CageList from './components/adminDashboard/cageManage/test';
 
 function App() {
   return (
@@ -25,7 +26,7 @@ function App() {
           <Route path='/custom' element={<ProtectedRoute><CustomManage /></ProtectedRoute> } />
           <Route path='/update/:id' element={<ProtectedRoute><UpdateCage /></ProtectedRoute> } />
           <Route path='/logout' element={<ProtectedRoute><Logout /></ProtectedRoute> } />
-
+          {/* <Route path='/test' element={<CageList />} /> */}
           {/* <Route path='/logout' element={<Logout />} /> */}
         </Route>
         <Route element={<WithoutNav />} >
