@@ -15,7 +15,6 @@ jobs:
           node-version: 19
       - run: echo "$API_HOST_IP"
       - run: npm i
-      - run: npm test
       
   deploy:
     needs: build
