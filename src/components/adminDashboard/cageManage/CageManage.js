@@ -8,6 +8,7 @@ export default function CageManage() {
     const handleEventRefresh = () => {
         setEventRefresh(prev => !prev)
     }
+    
     return (
         <div style={{ marginTop: "80px" }} className='service-container'>
             <div className='service-title'>
