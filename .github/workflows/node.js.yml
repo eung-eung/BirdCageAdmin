@@ -1,0 +1,32 @@
+
+name: Node.js Package
+
+on:
+  push
+env: 
+  API_HOST_IP: ${{ secrets.API_HOST_IP }}
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 19
+      - run: echo "$API_HOST_IP"
+      - run: npm ci
+      - run: npm test
+      
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Install Python dependency
+        run: |
+          sudo apt-get update && sudo apt-get install python3-pip -y
+          pip install -r requirements.txt
+      - name: Deploy to Server
+        run: python cd-script.py ${{ secrets.HOST_IP }} ${{ secrets.USER }} ${{ secrets.PASSWORD }} ${{ secrets.PORT }}
+  
+  
