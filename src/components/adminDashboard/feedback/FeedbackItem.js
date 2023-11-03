@@ -46,7 +46,7 @@ export default function FeedbackItem(feedback) {
                         <Typography component="div" variant="h5">
                             <StarFeedback rating={feedback.feedback.rating} />
                         </Typography>
-                        <Typography
+                        {/* <Typography
                             sx={{ color: "#696969" }}
                             component="div"
                             variant="subtitle2"
@@ -54,7 +54,7 @@ export default function FeedbackItem(feedback) {
                             Booked Studio: <Typography color="#235A8F" style={{ fontWeight: 500 }} component="span" >
                                 {feedback.feedback.bookedStudio}
                             </Typography>
-                        </Typography>
+                        </Typography> */}
                     </Typography>
                     {/* rating content */}
                     <Typography sx={{ textAlign: "left", marginTop: "10px" }} component="div" variant="caption">

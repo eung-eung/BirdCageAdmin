@@ -147,6 +147,11 @@ export default function TableCage() {
         rows={cages}
         columns={columns}
         getRowId={getRowId}
+        sx={{
+          "&.MuiDataGrid-root .MuiDataGrid-cell:focus-within": {
+            outline: "none !important",
+          },
+        }}
         initialState={{
           pagination: {
             paginationModel: { page: 0, pageSize: 10 },
