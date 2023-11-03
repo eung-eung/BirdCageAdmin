@@ -65,7 +65,7 @@ export default function ProcessingTable({ data }) {
                             onClick={() =>
                                 handleUpdateOrderStatus("Delivering", params.row._id)
                             }
-                            
+
                             style={{
                                 marginRight: "10px",
                                 backgroundColor: "#4F709C",
@@ -87,6 +87,11 @@ export default function ProcessingTable({ data }) {
                 columns={columns}
                 getRowId={getRowId}
                 pageSize={5}
+                sx={{
+                    "&.MuiDataGrid-root .MuiDataGrid-cell:focus-within": {
+                        outline: "none !important",
+                    },
+                }}
                 checkboxSelection
                 initialState={{
                     pagination: {

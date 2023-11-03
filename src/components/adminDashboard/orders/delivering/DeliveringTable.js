@@ -7,13 +7,13 @@ import { handleUpdateOrderStatus } from '../utils/orderStatusUtil';
 
 
 
-export default function DeliveryTable({data}) {
+export default function DeliveryTable({ data }) {
     const getRowId = (row) => row._id;
     const [rows, setRows] = useState([]);
     console.log(data)
     useEffect(() => {
         setRows(data);
-    },[data]);
+    }, [data]);
     // const [rows, setRows] = useState([
     //     {
     //         "_id": 1,
@@ -116,7 +116,7 @@ export default function DeliveryTable({data}) {
                         <Button
                             variant="contained"
                             style={{ marginRight: "10px", backgroundColor: "#79AC78", color: "white" }}
-                            onClick={() =>handleUpdateOrderStatus("Completed", params.row._id)}  
+                            onClick={() => handleUpdateOrderStatus("Completed", params.row._id)}
                         >
                             Complete
                         </Button>
@@ -133,6 +133,11 @@ export default function DeliveryTable({data}) {
                 getRowId={getRowId}
                 pageSize={5}
                 checkboxSelection
+                sx={{
+                    "&.MuiDataGrid-root .MuiDataGrid-cell:focus-within": {
+                        outline: "none !important",
+                    },
+                }}
                 initialState={{
                     pagination: {
                         paginationModel: { page: 0, pageSize: 5 },

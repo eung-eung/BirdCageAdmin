@@ -6,13 +6,13 @@ import DetailOrder from '../detailOrder/DetailOrder';
 
 
 
-export default function CompletedTable({data}) {
+export default function CompletedTable({ data }) {
     const getRowId = (row) => row._id;
     const [rows, setRows] = useState([]);
     console.log(data)
     useEffect(() => {
         setRows(data);
-    },[data]);
+    }, [data]);
     // const [rows, setRows] = useState([
     //     {
     //         "_id": 1,
@@ -127,6 +127,11 @@ export default function CompletedTable({data}) {
                 columns={columns}
                 getRowId={getRowId}
                 pageSize={5}
+                sx={{
+                    "&.MuiDataGrid-root .MuiDataGrid-cell:focus-within": {
+                        outline: "none !important",
+                    },
+                }}
                 checkboxSelection
                 initialState={{
                     pagination: {

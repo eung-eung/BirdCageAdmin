@@ -4,7 +4,7 @@ import { Button } from "@mui/material";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import DetailOrder from "../detailOrder/DetailOrder";
 
-export default function CanceledTable({data}) {
+export default function CanceledTable({ data }) {
     const getRowId = (row) => row._id;
     const [rows, setRows] = useState([]);
     console.log(data);
@@ -133,6 +133,11 @@ export default function CanceledTable({data}) {
         <div style={{ height: 400, marginLeft: "300px", marginTop: "100px" }}>
             <DataGrid
                 rows={rows}
+                sx={{
+                    "&.MuiDataGrid-root .MuiDataGrid-cell:focus-within": {
+                        outline: "none !important",
+                    },
+                }}
                 columns={columns}
                 getRowId={getRowId}
                 pageSize={5}

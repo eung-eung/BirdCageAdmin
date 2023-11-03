@@ -1,4 +1,4 @@
-import React, {useState, useEffect} from 'react'
+import React, { useState, useEffect } from 'react'
 import Header from '../header/Header'
 import ProcessingTable from './processing/ProcessingTable'
 import { Button } from '@mui/material'
@@ -25,7 +25,7 @@ export default function Orders() {
                 for (const [key, value] of Object.entries(data)) {
                     for (let i = 0; i < value.length; i++) {
                         console.log(`${value[i]._id + "    " + value[i]?.customer[0]?.account[0]?.phoneNumber}`)
-                        value[i].phoneNumber =  value[i]?.customer[0]?.account[0]?.phoneNumber;
+                        value[i].phoneNumber = value[i]?.customer[0]?.account[0]?.phoneNumber;
                     }
                     switch (key) {
                         case "Processing":
@@ -39,7 +39,7 @@ export default function Orders() {
                             break;
                         case "Canceled":
                             setCanceledOrder(value);
-                            break; 
+                            break;
                         default:
                             break;
                     }
@@ -49,38 +49,38 @@ export default function Orders() {
     console.log(canceledOrder)
     return (
         <div style={{ marginTop: "80px" }} className="service-container">
-        <div className="service-title">
-            <h1 className="mt-2 text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl">
-                Processing orders
-            </h1>
+            <div className="service-title">
+                <h1 className="mt-2 text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl">
+                    Processing orders
+                </h1>
+            </div>
+            <div className="service-content">
+                <ProcessingTable data={processingOrder} />
+            </div>
+            <div className="service-title">
+                <h1 className="mt-2 text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl">
+                    Delivering orders
+                </h1>
+            </div>
+            <div className="service-content">
+                <DeliveringTable data={deliveringOrder} />
+            </div>
+            <div className="service-title">
+                <h1 className="mt-2 text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl">
+                    Completed orders
+                </h1>{" "}
+            </div>
+            <div className="service-content">
+                <CompletedTable data={completedOrder} />
+            </div>
+            <div className="service-title">
+                <h1 className="mt-2 text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl">
+                    Canceled orders
+                </h1>
+            </div>
+            <div className="service-content" style={{ marginBottom: "100px" }}>
+                <CanceledTable data={canceledOrder} />
+            </div>
         </div>
-        <div className="service-content">
-            <ProcessingTable data={processingOrder} />
-        </div>
-        <div className="service-title">
-            <h1 className="mt-2 text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl">
-                Delivering orders
-            </h1>
-        </div>
-        <div className="service-content">
-            <DeliveringTable data={deliveringOrder}/>
-        </div>
-        <div className="service-title">
-            <h1 className="mt-2 text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl">
-                Completed orders
-            </h1>{" "}
-        </div>
-        <div className="service-content">
-            <CompletedTable data={completedOrder} />
-        </div>
-        <div className="service-title">
-            <h1 className="mt-2 text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl">
-                Canceled orders
-            </h1>
-        </div>
-        <div className="service-content" style={{ marginBottom: "100px" }}>
-            <CanceledTable data={canceledOrder} />
-        </div>
-    </div>
     )
 }
