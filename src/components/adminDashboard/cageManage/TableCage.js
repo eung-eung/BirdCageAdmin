@@ -14,7 +14,7 @@ import UseToken from '../../handleToken/UseToken';
 
 
 
-export default function TableCage() {
+export default function TableCage({ eventRefresh }) {
   const getRowId = (row) => row._id;
   const { getToken } = UseToken();
   const [dataDialogOpen, setCagesDialogOpen] = useState(false)
@@ -51,7 +51,7 @@ export default function TableCage() {
 
   useEffect(() => {
     fetchCages();
-  }, []);
+  }, [eventRefresh]);
 
   if (loading) {
     return <div>Loading...</div>;
