@@ -69,9 +69,9 @@ export default function ProcessingTable() {
             "description": 'Fugiat ipsum ipsum deserunt culpa aute sint do nostrud anim incididunt cillum culpa consequat. Excepteur qui ipsum aliquip consequat sint. Sit id mollit nulla mollit nostrud in ea officia proident. Irure nostrud pariatur mollit ad adipisicing reprehenderit deserunt qui eu.',
             "address": '303 Maple Street, City, Country',
             "shipFee": '40'
-          }
+        }
     ]);
-    
+
     const [selectedRow, setSelectedRow] = useState(null);
     const [isDialogOpen, setIsDialogOpen] = useState(false);
 
@@ -83,24 +83,24 @@ export default function ProcessingTable() {
 
 
     const columns = [
-        { field: 'phoneNumber', headerName: 'Phone number', width: 200 },
-        { field: 'shipFee', headerName: 'Ship fee', width: 130 },
-        { field: 'total', headerName: 'Total', width: 130 },
-        { field: 'paymentDate', headerName: 'Payment date', width: 150 },
-        { field: 'deliveryDate', headerName: 'Delivey date', width: 150 },
+        { field: 'phoneNumber', headerName: 'Phone number', width: 250 },
+        { field: 'shipFee', headerName: 'Ship fee', width: 150 },
+        { field: 'total', headerName: 'Total', width: 150 },
+        { field: 'paymentDate', headerName: 'Payment date', width: 200 },
+        { field: 'deliveryDate', headerName: 'Delivey date', width: 200 },
         {
             field: 'detail',
             headerName: 'Detail',
-            width: 130,
+            width: 150,
             renderCell: (params) => {
                 return (
                     <div>
-                         <Button
+                        <Button
                             variant="text"
-                            onClick={() => handleDetailClick(params.row)} 
+                            onClick={() => handleDetailClick(params.row)}
                         >
-                            <div style={{marginRight: '18px'}}><VisibilityIcon style={{color: '#4F709C'}}/></div>
-                          
+                            <div style={{ marginRight: '18px' }}><VisibilityIcon style={{ color: '#4F709C' }} /></div>
+
                         </Button>
                     </div>
                 );
@@ -124,7 +124,7 @@ export default function ProcessingTable() {
 
 
     return (
-        <div  style={{ height: 400, marginLeft: "300px", marginTop: "100px" }}>
+        <div style={{ height: 400, marginLeft: "300px", marginTop: "100px" }}>
             <DataGrid
                 rows={rows}
                 columns={columns}
@@ -139,13 +139,13 @@ export default function ProcessingTable() {
                 pageSizeOptions={[5, 10]}
 
             />
-            
+
             {/* Detail Order Dialog */}
             <DetailOrder
-        open={isDialogOpen}
-        onClose={() => setIsDialogOpen(false)}
-        order={selectedRow}
-      />
+                open={isDialogOpen}
+                onClose={() => setIsDialogOpen(false)}
+                order={selectedRow}
+            />
         </div>
     );
 }

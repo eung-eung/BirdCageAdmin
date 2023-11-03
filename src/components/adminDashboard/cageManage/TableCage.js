@@ -8,6 +8,7 @@ import ModeEditIcon from '@mui/icons-material/ModeEdit';
 import DeleteIcon from '@mui/icons-material/Delete';
 import dayjs from 'dayjs';
 import { Link } from 'react-router-dom';
+import UseToken from '../../handleToken/UseToken';
 
 
 
@@ -15,6 +16,7 @@ import { Link } from 'react-router-dom';
 
 export default function TableCage() {
   const getRowId = (row) => row._id;
+  const { getToken } = UseToken();
   const [dataDialogOpen, setCagesDialogOpen] = useState(false)
   const [selectedRow, setSelectedRow] = useState(null);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
@@ -24,29 +26,31 @@ export default function TableCage() {
 
 
   //Get all cages
-  const fetchCage = () => {
-    const apiUrl = 'http://localhost:5000/api/v1/cage';
-
-    fetch(apiUrl)
-      .then((response) => {
-        if (!response.ok) {
-          throw new Error('Network response was not ok');
-        }
-        return response.json();
-      })
-      .then((responseData) => {
-        setCages(responseData.data.cages);
-        setLoading(false);
-      })
-      .catch((err) => {
-        setError(err);
-        setLoading(false);
+  async function fetchCages() {
+    try {
+      const response = await fetch('http://localhost:5000/api/v1/cage/getAllWithDeletedItem', {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${getToken()}`,
+          'Content-Type': 'application/json',
+        },
       });
-  };
+  
+      if (response.ok) {
+        const data = await response.json();
+        console.log(data); // Log the data
+        setCages(data.data.cages);
+        setLoading(false);
+      } else {
+        console.error('Error fetching data:', response.status);
+      }
+    } catch (error) {
+      console.error('Error fetching data:', error);
+    }
+  }
 
-  // Fetch cage data when the component mounts
   useEffect(() => {
-    fetchCage();
+    fetchCages();
   }, []);
 
   if (loading) {
@@ -85,12 +89,12 @@ export default function TableCage() {
       .then((response) => {
         if (response.ok) {
           setCages((prevCages) =>
-          prevCages.map((c) =>
-            c._id === cage._id ? { ...c, delFlg: true } : c
-          )
-        );
-        console.log('Delete successfully!');
-        setDeleteDialogOpen(false);
+            prevCages.map((c) =>
+              c._id === cage._id ? { ...c, delFlg: true } : c
+            )
+          );
+          console.log('Delete successfully!');
+          setDeleteDialogOpen(false);
           console.log('Delete successfully!')
           setDeleteDialogOpen(false)
         }
@@ -104,7 +108,17 @@ export default function TableCage() {
 
 
   const columns = [
-    { field: 'name', headerName: 'Name', width: 720 },
+    {
+      field: 'imagePath', headerName: 'Image', width: 150, renderCell: (params) => (
+        <div>
+          <img src={params.row.imagePath}
+            alt="Cage_image"
+            style={{ height: "70px", objectFit: "contain" }} />
+        </div>
+
+      ),
+    },
+    { field: 'name', headerName: 'Name', width: 800 },
     { field: 'price', headerName: 'Price', width: 100 },
     {
       field: 'actions',
@@ -112,15 +126,15 @@ export default function TableCage() {
       width: 200,
       renderCell: (params) => (
         <div>
-        <Button variant="text" onClick={() => openDataDialog(params.row)}><VisibilityIcon /></Button>
-        <Button variant="text" ><Link to={`/update/${params.row._id}`}><ModeEditIcon /></Link></Button>
-        {params.row.delFlg ? (
-         <span style={{ color: '#7D7C7C', fontStyle: 'italic' }}>Deleted</span>
-        ) : (
-          <Button variant="text" onClick={() => openDeleteDialog(params.row)}><DeleteIcon /></Button>
-        )}
-      </div>
-        
+          <Button variant="text" onClick={() => openDataDialog(params.row)}><VisibilityIcon /></Button>
+          <Button variant="text" ><Link to={`/update/${params.row._id}`}><ModeEditIcon /></Link></Button>
+          {params.row.delFlg ? (
+            <span style={{ color: '#7D7C7C', fontStyle: 'italic' }}>Deleted</span>
+          ) : (
+            <Button variant="text" onClick={() => openDeleteDialog(params.row)}><DeleteIcon /></Button>
+          )}
+        </div>
+
       ),
     },
 
@@ -128,7 +142,7 @@ export default function TableCage() {
 
 
   return (
-    <div style={{ height: 400, marginLeft: "300px", marginTop: "30px" }}>
+    <div style={{ height: 400, marginLeft: "300px", marginTop: "50px" }}>
       <DataGrid
         rows={cages}
         columns={columns}
@@ -140,6 +154,7 @@ export default function TableCage() {
         }}
         pageSizeOptions={[5, 10]}
         checkboxSelection
+        rowHeight={100}
       />
 
       {/* Detail Dialog */}

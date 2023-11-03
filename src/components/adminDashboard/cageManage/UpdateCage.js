@@ -1,7 +1,7 @@
 import axios from 'axios';
 import React, { useEffect, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom';
-import { Alert, AlertTitle, Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, FormControl, FormControlLabel, IconButton, Input, Radio, Select, TextField, TextareaAutosize } from '@mui/material';
+import { Alert, AlertTitle, Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle } from '@mui/material';
 import dayjs from 'dayjs';
 
 
@@ -24,6 +24,9 @@ export default function UpdateCage() {
     const [isLengthValid, setIsLengthValid] = useState(true);
     const [isHeightValid, setIsHeightValid] = useState(true);
     const [error, setError] = useState(null);
+    const [isPriceValid, setIsPriceValid] = useState(true);
+    const [uploadedMainImage, setuploadedMainImage] = useState(null);
+    const [extraImages, setExtraImages] = useState([]);
 
     const { id } = useParams();
     useEffect(() => {
@@ -53,10 +56,60 @@ export default function UpdateCage() {
             });
     }, [id]);
 
+    const handleMainImageChange = (e) => {
+        const selectedFile = e.target.files[0];
+        console.log(selectedFile);
+
+        const file_name = selectedFile.name;
+        const idx_dot = file_name.lastIndexOf('.') + 1;
+        const extFile = file_name.substr(idx_dot, file_name.length).toLowerCase();
+        console.log(extFile);
+
+        if (extFile === "jpg" || extFile === "jpeg" || extFile === "png") {
+            setCage((prevCage) => ({
+                ...prevCage,
+                filename: selectedFile
+            }));
+            setuploadedMainImage(URL.createObjectURL(selectedFile));
+        } else {
+            e.target.value = ''; // Clear the input if it's not an image
+            setCage((prevCage) => ({
+                ...prevCage,
+                filename: null,
+            }));
+        }
+    };
+
+    const handleExtraImagesChange = (e) => {
+        const selectedFiles = Array.from(e.target.files);
+        console.log(selectedFiles);
+
+        const file_name = selectedFiles[0].name;
+        const idx_dot = file_name.lastIndexOf('.') + 1;
+        const extFile = file_name.substr(idx_dot, file_name.length).toLowerCase();
+        console.log(extFile);
+
+        if (extFile === "jpg" || extFile === "jpeg" || extFile === "png") {
+            setCage((prevCage) => ({
+                ...prevCage,
+                filenames: selectedFiles,
+            }));
+            const extraImageUrls = selectedFiles.map((file) => URL.createObjectURL(file));
+
+            setExtraImages(extraImageUrls);
+        } else {
+            e.target.value = ''; // Clear the input if it's not an image
+            setCage((prevCage) => ({
+                ...prevCage,
+                filenames: [],
+            }));
+        }
+
+    };
+
     const handleChange = (e) => {
         const { name, value, type, files } = e.target;
 
-        // const newValue = name === 'delFlg' ? e.target.value === 'true' : value;
         if (name === 'width') {
             const isValid = value >= 30 && value <= 100;
             setIsWidthValid(isValid);
@@ -71,18 +124,14 @@ export default function UpdateCage() {
             const isValid = value >= 30 && value <= 100;
             setIsHeightValid(isValid);
         }
-        if (type === 'file') {
-            // Handle file input separately
-            if (name === 'filename') {
-                setCage({ ...cage, filename: files[0] });
-            } else if (name === 'filenames') {
-                setCage({ ...cage, filenames: [...files] });
-            }
-        } else {
-            // Handle other input fields
-            setCage({ ...cage, [name]: value });
+
+        if (name === 'price') {
+            const isValid = value > 0;
+            setIsPriceValid(isValid);
         }
-        
+
+        setCage({ ...cage, [name]: value });
+
     };
 
 
@@ -91,6 +140,12 @@ export default function UpdateCage() {
     const handleSubmit = (e) => {
         e.preventDefault();
         console.log("Submit button clicked");
+        if (!isWidthValid || !isLengthValid || !isHeightValid || !isPriceValid) {
+
+            console.log('Form data is not valid. Please correct the errors.');
+            return;
+        }
+
         const formData = new FormData();
 
         formData.append('name', cage.name);
@@ -170,6 +225,7 @@ export default function UpdateCage() {
                                                 name="price"
                                                 value={cage.price}
                                                 onChange={handleChange} autocomplete="Price" class="block p-2 w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6" />
+                                            {!isPriceValid && <div style={{ color: 'red' }}>Price must be larger than 0</div>}
                                         </div>
                                     </div>
                                 </div>
@@ -225,31 +281,7 @@ export default function UpdateCage() {
                                         </div>
                                     </div>
                                 </div>
-                                {/* <div class="p-2 w-1/2">
-                                    <div class="relative flex items-center">
-                                        <label for="delFlg" class="leading-7 text-sm text-gray-600 mr-2">delFlg:</label>
 
-                                        <FormControlLabel
-                                            control={<Radio />}
-                                            name="delFlg"
-                                            value="false"
-                                            checked={cage.delFlg === false}
-                                            onChange={handleChange}
-                                            class="mr-2"
-                                            label="No"
-                                        />
-                                        
-                                        <FormControlLabel
-                                            control={<Radio />}
-                                            name="delFlg"
-                                            value="true"
-                                            checked={cage.delFlg === true}
-                                            onChange={handleChange}
-                                            label="Yes"
-                                        />
-                                        
-                                    </div>
-                                </div> */}
 
 
                                 <div class="p-2 w-full">
@@ -264,32 +296,51 @@ export default function UpdateCage() {
                                                             <input id="filename"
                                                                 type="file"
                                                                 name="filename"
-                                                                accept="image/*"
-                                                                onChange={handleChange}
+                                                                accept=".jpg, .jpeg, .png"
+                                                                onChange={handleMainImageChange}
                                                                 class="sr-only" />
                                                         </label>
                                                         <p class="pl-1">or drag and drop</p>
                                                     </div>
                                                 </div>
                                             </div>
-                                            {/* {newCage.filenames[0] && ( */}
+
                                             <div>
                                                 <h2 class="pl-1">Selected Main Image:</h2>
-                                                <div className="image-preview">
-                                                    <div className="flex flex-wrap -m-4 text-center">
-                                                        <div className="p-4 md:w-1/4 sm:w-1/2 w-full">
-                                                            <div className="border-2 border-gray-200 px-4 py-2 rounded-lg">
-                                                                <img
-                                                                    src={cage.filename}
-                                                                    alt="Main Image"
-                                                                    className="rounded-lg w-full h-20 object-cover object-center mb-3"
-                                                                />
+                                                {uploadedMainImage ? (
+                                                    <div>
+                                                        <div className="image-preview">
+                                                            <div className="flex flex-wrap -m-4 text-center">
+                                                                <div className="p-4 md:w-1/4 sm:w-1/2 w-full">
+                                                                    <div className="border-2 border-gray-200 px-4 py-2 rounded-lg">
+                                                                        <img
+                                                                            src={uploadedMainImage}
+                                                                            alt="Main Image"
+                                                                            className="rounded-lg w-full h-20 object-cover object-center mb-3"
+                                                                        />
+                                                                    </div>
+                                                                </div>
                                                             </div>
                                                         </div>
                                                     </div>
-                                                </div>
+                                                ) : (
+                                                    <div className="image-preview">
+                                                        <div className="flex flex-wrap -m-4 text-center">
+                                                            <div className="p-4 md:w-1/4 sm:w-1/2 w-full">
+                                                                <div className="border-2 border-gray-200 px-4 py-2 rounded-lg">
+                                                                    <img
+                                                                        src={cage.filename}
+                                                                        alt="Main Image"
+                                                                        className="rounded-lg w-full h-20 object-cover object-center mb-3"
+                                                                    />
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                )}
+
                                             </div>
-                                            {/* )} */}
+
                                         </div>
                                     </div>
                                     <div class="p-2 w-full">
@@ -303,37 +354,57 @@ export default function UpdateCage() {
                                                             <input id="filenames"
                                                                 type="file"
                                                                 name="filenames"
-                                                                accept="image/*"
+                                                                accept=".jpg, .jpeg, .png"
                                                                 multiple
-                                                                onChange={handleChange}
+                                                                onChange={handleExtraImagesChange}
                                                                 class="sr-only" />
                                                         </label>
                                                         <p class="pl-1">or drag and drop</p>
                                                     </div>
                                                 </div>
                                             </div>
-                                            {cage.filenames.length > 0 && (
-                                            <div>
-                                                <h2 class="pl-1">Selected Extra Images:</h2>
-                                                <div className="image-preview">
-                                                    <div className="flex flex-wrap -m-4 text-center">
-                                                    {cage.filenames.map((image, index) => (
-                                                        <div className="p-4 md:w-1/4 sm:w-1/2 w-full"
-                                                        key={index}
-                                                        >
-                                                            <div className="border-2 border-gray-200 px-4 py-2 rounded-lg">
-                                                                <img
-                                                                    src={image}
-                                                                    alt={`Image ${index + 1}`}
-                                                                    className="flex-shrink-0 rounded-lg w-full h-20 object-cover object-center mb-3"
-                                                                />
-                                                            </div>
+
+
+                                            {extraImages.length > 0 ? (
+                                                <div>
+                                                    <h2 class="pl-1">Selected Extra Images:</h2>
+                                                    <div className="image-preview">
+                                                        <div className="flex flex-wrap -m-4 text-center">
+                                                            {extraImages.map((image, index) => (
+                                                                <div className="p-4 md:w-1/4 sm:w-1/2 w-full" key={index}>
+                                                                    <div className="border-2 border-gray-200 px-4 py-2 rounded-lg">
+                                                                        <img
+                                                                            src={image}
+                                                                            alt={`Image ${index + 1}`}
+                                                                            className="flex-shrink-0 rounded-lg w-full h-20 object-cover object-center mb-3"
+                                                                        />
+                                                                    </div>
+                                                                </div>
+                                                            ))}
                                                         </div>
-                                                        ))} 
                                                     </div>
                                                 </div>
-                                            </div>
-                                             )} 
+                                            ) :
+                                                (
+                                                    <div>
+                                                        <h2 class="pl-1">Selected Extra Images:</h2>
+                                                        <div className="image-preview">
+                                                            <div className="flex flex-wrap -m-4 text-center">
+                                                                {cage.filenames.map((image, index) => (
+                                                                    <div className="p-4 md:w-1/4 sm:w-1/2 w-full" key={index}>
+                                                                        <div className="border-2 border-gray-200 px-4 py-2 rounded-lg">
+                                                                            <img
+                                                                                src={image}
+                                                                                alt={`Image ${index + 1}`}
+                                                                                className="flex-shrink-0 rounded-lg w-full h-20 object-cover object-center mb-3"
+                                                                            />
+                                                                        </div>
+                                                                    </div>
+                                                                ))}
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                )}
                                         </div>
                                     </div>
                                 </div>

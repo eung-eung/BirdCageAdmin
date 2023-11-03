@@ -38,6 +38,7 @@ export default function CageDialogCreate() {
     const [isWidthValid, setIsWidthValid] = useState(true);
     const [isLengthValid, setIsLengthValid] = useState(true);
     const [isHeightValid, setIsHeightValid] = useState(true);
+    const [isPriceValid, setIsPriceValid] = useState(true);
     const [open, setOpen] = useState(false);
     const [successDialogOpen, setSuccessDialogOpen] = useState(false);
 
@@ -55,20 +56,51 @@ export default function CageDialogCreate() {
 
     const handleMainImageChange = (e) => {
         const selectedFile = e.target.files[0];
+        console.log(selectedFile);
 
-        setNewCage((prevCage) => ({
-            ...prevCage,
-            filenames: [selectedFile, ...prevCage.filenames.slice(1)],
-        }));
+        const file_name = selectedFile.name;
+        const idx_dot = file_name.lastIndexOf('.') + 1;
+        const extFile = file_name.substr(idx_dot, file_name.length).toLowerCase();
+        console.log(extFile);
+
+        if (extFile === "jpg" || extFile === "jpeg" || extFile === "png") {
+            setNewCage((prevCage) => ({
+                ...prevCage,
+                filenames: [selectedFile],
+            }));
+        } else {
+            e.target.value = ''; // Clear the input if it's not an image
+            setNewCage((prevCage) => ({
+                ...prevCage,
+                filenames: [],
+            }));
+        }
     };
 
     const handleExtraImagesChange = (e) => {
         const selectedFiles = Array.from(e.target.files);
-        setNewCage((prevCage) => ({
-            ...prevCage,
-            filenames: [prevCage.filenames[0], ...prevCage.filenames.slice(1), ...selectedFiles],
-        }));
+        console.log(selectedFiles);
+
+        const file_name = selectedFiles[0].name;
+        const idx_dot = file_name.lastIndexOf('.') + 1;
+        const extFile = file_name.substr(idx_dot, file_name.length).toLowerCase();
+        console.log(extFile);
+
+        if (extFile === "jpg" || extFile === "jpeg" || extFile === "png") {
+            setNewCage((prevCage) => ({
+                ...prevCage,
+                filenames: [...prevCage.filenames, ...selectedFiles],
+            }));
+        } else {
+            e.target.value = ''; // Clear the input if it's not an image
+            setNewCage((prevCage) => ({
+                ...prevCage,
+                filenames: [],
+            }));
+        }
+
     };
+
 
 
 
@@ -90,12 +122,21 @@ export default function CageDialogCreate() {
             setIsHeightValid(isValid);
         }
 
+        if (name === 'price') {
+            const isValid = value > 0;
+            setIsPriceValid(isValid);
+        }
+
         setNewCage({ ...newCage, [name]: value });
     };
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+        if (!isWidthValid || !isLengthValid || !isHeightValid || !isPriceValid) {
 
+            console.log('Form data is not valid. Please correct the errors.');
+            return;
+        }
         const formData = new FormData();
 
         // Append fields from newCage to formData
@@ -187,6 +228,7 @@ export default function CageDialogCreate() {
                                                     type='number'
                                                     id="price"
                                                     name="price" autocomplete="Price" class="block p-2 w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6" />
+                                                {!isPriceValid && <div style={{ color: 'red' }}>Price must be larger than 0</div>}
                                             </div>
                                         </div>
                                     </div>
@@ -258,7 +300,7 @@ export default function CageDialogCreate() {
                                                     <div class="mt-1 flex text-sm leading-6 text-gray-600">
                                                         <label for="mainImage" class="relative cursor-pointer rounded-md bg-white font-semibold text-indigo-600 focus-within:outline-none focus-within:ring-2 focus-within:ring-indigo-600 focus-within:ring-offset-2 hover:text-indigo-500">
                                                             <span>Upload a file</span>
-                                                            <input id="mainImage" type="file" name="mainImage" onChange={handleMainImageChange} class="sr-only" />
+                                                            <input accept=".jpg, .jpeg, .png" id="mainImage" type="file" name="mainImage" onChange={handleMainImageChange} class="sr-only" />
                                                         </label>
                                                         <p class="pl-1">or drag and drop</p>
                                                     </div>
@@ -292,13 +334,13 @@ export default function CageDialogCreate() {
                                                     <div class="mt-1 flex text-sm leading-6 text-gray-600">
                                                         <label for="extraImages" class="relative cursor-pointer rounded-md bg-white font-semibold text-indigo-600 focus-within:outline-none focus-within:ring-2 focus-within:ring-indigo-600 focus-within:ring-offset-2 hover:text-indigo-500">
                                                             <span>Upload a file</span>
-                                                            <input id="extraImages" type="file" name="extraImages" multiple onChange={handleExtraImagesChange} class="sr-only" />
+                                                            <input accept=".jpg, .jpeg, .png" id="extraImages" type="file" name="extraImages" multiple onChange={handleExtraImagesChange} class="sr-only" />
                                                         </label>
                                                         <p class="pl-1">or drag and drop</p>
                                                     </div>
                                                 </div>
                                             </div>
-                                            {newCage.filenames.length > 1 && (
+                                            {newCage.filenames.length > 0 && (
                                                 <div>
                                                     <h2 class="pl-1">Selected Extra Images:</h2>
                                                     <div className="image-preview">
@@ -318,20 +360,6 @@ export default function CageDialogCreate() {
                                                     </div>
                                                 </div>
                                             )}
-                                        </div>
-                                    </div>
-
-                                    <div class="p-2 w-full">
-
-                                        <div class="col-span-full">
-                                            <label for="createDate" class="block text-sm font-medium leading-6 text-gray-900">Create date</label>
-                                            <div class="mt-2">
-                                                <input onChange={handleChange}
-                                                    value={newCage.createDate}
-                                                    id="createDate"
-                                                    name="createDate"
-                                                    required autocomplete="Create date" class="block p-2 w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6" />
-                                            </div>
                                         </div>
                                     </div>
                                     <div class="p-2 mb-10 mt-8 w-full">
