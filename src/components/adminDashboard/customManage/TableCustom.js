@@ -159,6 +159,12 @@ export default function TableCustom() {
             field: "status",
             headerName: "Status",
             width: 200,
+            renderCell: (params) => {
+                const status = params.value?.status;
+                return <div>   <Button variant="outlined" color="error">
+                    Pending
+                </Button></div>;
+            },
         },
         {
             field: "description",
@@ -210,6 +216,7 @@ export default function TableCustom() {
                     "&.MuiDataGrid-root .MuiDataGrid-cell:focus-within": {
                         outline: "none !important",
                     },
+                    textAlign: "center"
                 }}
                 // onEditCellChangeCommitted={(params) => {
                 //     if (params.field === "description") {
