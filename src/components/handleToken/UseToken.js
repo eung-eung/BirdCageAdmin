@@ -1,38 +1,43 @@
-import {jwtDecode} from 'jwt-decode';
-import React, { useEffect, useState } from 'react'
-import { useCookies } from 'react-cookie'
-import { useNavigate } from 'react-router-dom';
-
-
+import { jwtDecode } from "jwt-decode";
 export default function UseToken() {
-    const [cookies, setCookie, removeCookie] = useCookies(['admin']);
-    console.log(cookies.admin)
+    const getToken = (tokenType = "accessToken") => {
+        if (tokenType === "accessToken" || tokenType === "refreshToken")
+            return localStorage.getItem(tokenType);
+        return null;
+    };
 
-    const getToken = () => {
-        try {
-            const adminToken = cookies.admin
-            if (adminToken) {
-                if (jwtDecode(adminToken).id) return adminToken
-            }
-            return null
-        } catch (error) {
-            console.log(error);
-            removeCookie("admin")
-        }
+    const getUserPhoneFromToken = () => {
+        return jwtDecode(getToken())[
+            "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name"
+        ];
+    };
+    const getRoleFromToken = () => {
+        return jwtDecode(getToken())[
+            "http://schemas.microsoft.com/ws/2008/06/identity/claims/role"
+        ];
+    };
 
-    }
-
-    const setToken = (token) => {
-        setCookie("admin", token)
-    }
+    const setToken = (token, tokenType) => {
+        if (tokenType === "accessToken" || tokenType === "refreshToken")
+            localStorage.setItem(tokenType, token);
+    };
     const removeToken = () => {
-        removeCookie("admin")
-        // navigate('/login')
-    }
+        // if (tokenType === "accessToken" || tokenType === "refreshToken")
+        localStorage.removeItem("accessToken");
+        localStorage.removeItem("refreshToken");
+    };
+    const decodeJwt = (accessToken = null) => {
+        if (!accessToken) accessToken = getToken("accessToken");
+        const decoded = jwtDecode(accessToken);
+        return decoded;
+    };
+
     return {
         setToken,
         getToken,
-        removeToken
-
-    }
+        removeToken,
+        decodeJwt,
+        getUserPhoneFromToken,
+        getRoleFromToken,
+    };
 }

@@ -27,6 +27,7 @@ const feedback = [
     }
 ]
 export default function Feedback() {
+    document.title = "Feedback Management"
     return (
         <div>
             <h3>Feedback</h3>

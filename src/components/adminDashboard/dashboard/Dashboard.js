@@ -29,6 +29,7 @@ const array = [
     }
 ]
 export default function Dashboard() {
+    document.title = "Dashboard"
     return (
         <div className='dashboard-container'>
             <div className='card-container'>

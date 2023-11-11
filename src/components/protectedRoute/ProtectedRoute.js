@@ -1,11 +1,11 @@
 import React from 'react';
 import { Route, Navigate } from 'react-router-dom';
+import UseToken from '../handleToken/UseToken';
 
 const ProtectedRoute = ({ children }) => {
-  const phoneNum = sessionStorage.getItem('phoneNum');
-  const role = sessionStorage.getItem('role');
+  const {getRoleFromToken, getUserPhoneFromToken} = UseToken();
 
-  if(sessionStorage.getItem('phoneNum') && sessionStorage.getItem('role')){
+  if(getRoleFromToken() && getUserPhoneFromToken()){
     return children;
   }
   return <Navigate to="/" />

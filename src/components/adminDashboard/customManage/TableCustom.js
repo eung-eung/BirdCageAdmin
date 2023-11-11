@@ -7,8 +7,8 @@ import { ChevronDownIcon } from '@heroicons/react/20/solid'
 import { Switch } from '@headlessui/react'
 import io from "socket.io-client";
 import UseToken from "../../handleToken/UseToken";
-const socket = io.connect("http://localhost:5000");
-
+// const socket = io.connect("http://localhost:5000");
+import  {get} from "../../../utils/httpClient";
 function classNames(...classes) {
     return classes.filter(Boolean).join(' ')
 }
@@ -37,76 +37,77 @@ export default function TableCustom() {
 
     useEffect(() => {
         setRows([])
-        fetch("http://localhost:5000/api/v1/cage/customCages/", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-                Authorization: "Bearer " + getToken(),
-            },
-        })
-            .then((res) => res.json())
+        get(`/Cages?$filter=contains(status, '_')&$expand=CageComponents($expand=component), Images`)
+            .then((res) => res.data.value)
             .then((result) => {
-                const components = result.data.component;
-                const cages = [];
-                components.forEach((c) => {
-                    const cage = {};
-                    c.forEach((cageEl) => {
-                        console.log(cageEl);
-                        // cage.id = cageEl._id;
-                        cageEl.cage.forEach((cageData) => {
-                            console.log(cageData.userId);
-                            cage.id = cageData._id;
-                            cage.name = cageData.userId;
-                            cage.length = cageData.length;
-                            cage.width = cageData.width;
-                            cage.height = cageData.height;
-                            cage.createDate = cageData.createDate;
-                            cage.status = cageData.status;
-                            cage.description = cageData.description;
-                        });
-                        cageEl.component.forEach((component) => {
-                            const componentData = {};
-                            fetch(
-                                "http://localhost:5000/api/v1/component/" +
-                                component._id
-                            )
-                                .then((res) => res.json())
-                                .then((result) => {
-                                    // console.log(result.data.component)
-                                    const componentDataFromApi =
-                                        result.data.component;
-
-                                    componentData.id = componentDataFromApi._id;
-                                    const componentFullName =
-                                        componentDataFromApi.name;
-                                    componentData.name = componentFullName;
-
-                                    const spaceIndex =
-                                        componentFullName.indexOf(" ");
-                                    const componentType =
-                                        componentFullName.substring(
-                                            0,
-                                            spaceIndex
-                                        );
-                                    cage[componentType.toLowerCase()] =
-                                        componentData;
-                                });
-                        });
-                        cages.push(cage);
+                const cages = result;
+                cages.forEach((cage) => {
+                    cage.status = cage.status.split("_")[0];
+                    cage.cageComponents.forEach((cageComponent) => {
+                        cage[cageComponent.component.type.toLowerCase()] = cageComponent.component;
                     });
                 });
+                // const components = result.data.component;
+                // const cages = [];
+                // components.forEach((c) => {
+                //     const cage = {};
+                //     c.forEach((cageEl) => {
+                //         console.log(cageEl);
+                //         // cage.id = cageEl._id;
+                //         cageEl.cage.forEach((cageData) => {
+                //             console.log(cageData.userId);
+                //             cage.id = cageData._id;
+                //             cage.name = cageData.userId;
+                //             cage.length = cageData.length;
+                //             cage.width = cageData.width;
+                //             cage.height = cageData.height;
+                //             cage.createDate = cageData.createDate;
+                //             cage.status = cageData.status;
+                //             cage.description = cageData.description;
+                //         });
+                //         cageEl.component.forEach((component) => {
+                //             const componentData = {};
+                //             fetch(
+                //                 "http://localhost:5000/api/v1/component/" +
+                //                 component._id
+                //             )
+                //                 .then((res) => res.json())
+                //                 .then((result) => {
+                //                     // console.log(result.data.component)
+                //                     const componentDataFromApi =
+                //                         result.data.component;
+
+                //                     componentData.id = componentDataFromApi._id;
+                //                     const componentFullName =
+                //                         componentDataFromApi.name;
+                //                     componentData.name = componentFullName;
+
+                //                     const spaceIndex =
+                //                         componentFullName.indexOf(" ");
+                //                     const componentType =
+                //                         componentFullName.substring(
+                //                             0,
+                //                             spaceIndex
+                //                         );
+                //                     cage[componentType.toLowerCase()] =
+                //                         componentData;
+                //                 });
+                //         });
+                //         cages.push(cage);
+                //     });
+                // });
 
                 setRows(cages);
             });
     }, [eventRefresh]);
 
     const [status, setStatus] = useState("");
-    useEffect(() => {
-        socket.on("receive_request_custom_cage", (d) => {
-            console.log(d);
-            setStatus(d);
-        });
-    }, [socket]);
+    // useEffect(() => {
+    //     socket.on("receive_request_custom_cage", (d) => {
+    //         console.log(d);
+    //         setStatus(d);
+    //     });
+    // }, [socket]);
     console.log("getToken: ", getToken());
     const changeOrderStatus = (id, data) => {
         fetch("http://localhost:5000/api/v1/cage/customCages/" + id, {
@@ -118,7 +119,7 @@ export default function TableCustom() {
             body: JSON.stringify(data),
         }).then(() => {
             setEventRefresh(prev => !prev)
-            socket.emit('accept_custom', { status: "CUS" })
+            // socket.emit('accept_custom', { status: "CUS" })
         })
     };
 

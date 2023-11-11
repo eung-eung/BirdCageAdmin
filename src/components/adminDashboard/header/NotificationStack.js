@@ -20,41 +20,41 @@ const solutions = [
   { name: 'Automations', description: 'Build strategic funnels that will convert', href: '#', icon: ArrowPathIcon },
 ]
 
-const socket = io.connect('http://localhost:5000')
+// const socket = io.connect('http://localhost:5000')
 export default function NotificationStack() {
   const [status, setStatus] = useState("")
   const [notiList, setNotiList] = useState([])
-  useEffect(() => {
-    socket.on("receive_request_custom_cage", (d) => {
-      console.log(d);
-      fetch("http://localhost:5000/api/v1/account/" + d.userId)
-        .then(res => res.json())
-        .then(data => {
+  // useEffect(() => {
+  //   socket.on("receive_request_custom_cage", (d) => {
+  //     console.log(d);
+  //     fetch("http://localhost:5000/api/v1/account/" + d.userId)
+  //       .then(res => res.json())
+  //       .then(data => {
 
-          setNotiList([
-            {
-              firstName: data.data.customer[0].firstName,
-              lastName: data.data.customer[0].lastName,
-              phoneNumber: data.data.customer[0].account[0].phoneNumber
-            }]
-          )
-          // setNotiList(prev => [...prev, {
-          //   firstName: data.data.customer[0].firstName,
-          //   lastName: data.data.customer[0].lastName,
-          //   phoneNumber: data.data.customer[0].account[0].phoneNumber
-          // }])
-          // console.log(data)
-        })
+  //         setNotiList([
+  //           {
+  //             firstName: data.data.customer[0].firstName,
+  //             lastName: data.data.customer[0].lastName,
+  //             phoneNumber: data.data.customer[0].account[0].phoneNumber
+  //           }]
+  //         )
+  //         // setNotiList(prev => [...prev, {
+  //         //   firstName: data.data.customer[0].firstName,
+  //         //   lastName: data.data.customer[0].lastName,
+  //         //   phoneNumber: data.data.customer[0].account[0].phoneNumber
+  //         // }])
+  //         // console.log(data)
+  //       })
 
-      // setStatus(d.status)
-    })
-  },
-    [socket])
+  //     // setStatus(d.status)
+  //   })
+  // },
+  //   [socket])
 
-  useEffect(() => {
-    document.title = `Dashboard (${notiList.length})`;
-  }, [notiList])
-  console.log(notiList);
+  // useEffect(() => {
+  //   document.title = `Dashboard (${notiList.length})`;
+  // }, [notiList])
+  // console.log(notiList);
   return (
     <Popover className="relative">
       <Popover.Button className="inline-flex items-center gap-x-1 text-sm font-semibold leading-6 text-gray-900">

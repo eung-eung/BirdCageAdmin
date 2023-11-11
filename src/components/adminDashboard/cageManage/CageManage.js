@@ -4,6 +4,7 @@ import { Button } from "@mui/material"
 import CageDialogCreate from './CageDialogCreate';
 import TableCage from './TableCage';
 export default function CageManage() {
+    document.title = "Cages Management"
     const [eventRefresh, setEventRefresh] = useState(false)
     const handleEventRefresh = () => {
         setEventRefresh(prev => !prev)

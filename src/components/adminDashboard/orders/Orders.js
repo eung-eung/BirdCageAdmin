@@ -8,6 +8,7 @@ import CompletedTable from './completed/CompletedTable'
 import CanceledTable from './canceled/CanceledTable'
 
 export default function Orders() {
+    document.title = "Orders Management"
     const [processingOrder, setProcessingOrder] = useState([]);
     const [deliveringOrder, setDeliveringOrder] = useState([]);
     const [completedOrder, setCompletedOrder] = useState([]);
