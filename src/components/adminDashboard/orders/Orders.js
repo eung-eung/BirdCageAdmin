@@ -6,7 +6,11 @@ import "./Orders.css"
 import DeliveringTable from './delivering/DeliveringTable'
 import CompletedTable from './completed/CompletedTable'
 import CanceledTable from './canceled/CanceledTable'
-
+import Box from '@mui/material/Box';
+import Tab from '@mui/material/Tab';
+import TabContext from '@mui/lab/TabContext';
+import TabList from '@mui/lab/TabList';
+import TabPanel from '@mui/lab/TabPanel';
 export default function Orders() {
     document.title = "Orders Management"
     const [processingOrder, setProcessingOrder] = useState([]);
@@ -14,39 +18,13 @@ export default function Orders() {
     const [completedOrder, setCompletedOrder] = useState([]);
     const [canceledOrder, setCanceledOrder] = useState([]);
     const [eventRefresh, setEventRefresh] = useState(false)
+    const [value, setValue] = React.useState('1');
+
+    const handleChange = (event, newValue) => {
+        setValue(newValue);
+    };
     useEffect(() => {
-        fetch("http://localhost:5000/api/v1/order", {
-            method: "GET",
-            headers: {
-                "Content-Type": "application/json",
-            },
-        })
-            .then((res) => res.json())
-            .then((result) => {
-                const data = result.orderByStatus;
-                for (const [key, value] of Object.entries(data)) {
-                    for (let i = 0; i < value.length; i++) {
-                        console.log(`${value[i]._id + "    " + value[i]?.customer[0]?.account[0]?.phoneNumber}`)
-                        value[i].phoneNumber = value[i]?.customer[0]?.account[0]?.phoneNumber;
-                    }
-                    switch (key) {
-                        case "Processing":
-                            setProcessingOrder(value);
-                            break;
-                        case "Delivering":
-                            setDeliveringOrder(value);
-                            break;
-                        case "Completed":
-                            setCompletedOrder(value);
-                            break;
-                        case "Canceled":
-                            setCanceledOrder(value);
-                            break;
-                        default:
-                            break;
-                    }
-                }
-            });
+
     }, [eventRefresh]);
     const handleRefresh = () => {
         console.log("a")
@@ -56,8 +34,25 @@ export default function Orders() {
 
     console.log(canceledOrder)
     return (
-        <div style={{ marginTop: "80px" }} className="service-container">
-            <div className="service-title">
+
+        <div style={{ marginTop: "80px", marginLeft: "20%" }} className="service-container">
+            <Box >
+                <TabContext value={value}>
+                    <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
+                        <TabList onChange={handleChange} aria-label="lab API tabs example">
+                            <Tab sx={{ width: "25%" }} label="Pending" value="1" />
+                            <Tab sx={{ width: "25%" }} label="Delivering" value="2" />
+                            <Tab sx={{ width: "25%" }} label="Completed" value="3" />
+                            <Tab sx={{ width: "25%" }} label="Canceled" value="4" />
+                        </TabList>
+                    </Box>
+                    <TabPanel value="1"><ProcessingTable /></TabPanel>
+                    <TabPanel value="2"><DeliveringTable /></TabPanel>
+                    <TabPanel value="3"><CompletedTable /></TabPanel>
+                    <TabPanel value="4"><CanceledTable /></TabPanel>
+                </TabContext>
+            </Box>
+            {/* <div className="service-title">
                 <h1 className="mt-2 text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl">
                     Processing orders
                 </h1>
@@ -88,7 +83,7 @@ export default function Orders() {
             </div>
             <div className="service-content" style={{ marginBottom: "100px" }}>
                 <CanceledTable data={canceledOrder} />
-            </div>
+            </div> */}
         </div>
     )
 }

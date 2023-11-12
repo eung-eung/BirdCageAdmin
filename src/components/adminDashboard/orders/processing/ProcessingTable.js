@@ -110,5 +110,6 @@ export default function ProcessingTable({ data, handleCallback }) {
                 order={selectedRow}
             />
         </div>
+
     );
 }
