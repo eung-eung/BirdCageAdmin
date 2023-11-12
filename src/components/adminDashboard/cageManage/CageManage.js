@@ -19,11 +19,7 @@ export default function CageManage() {
                 <div className='service-action'>
                     <div className='service-action-btn'>
                         <CageDialogCreate handleCallback={handleEventRefresh} />
-                        <div>
-                            <Button id='delete' variant="outlined" color="error">
-                                Delete
-                            </Button>
-                        </div>
+                        
                     </div>
                 </div>
                 <TableCage eventRefresh={eventRefresh} />

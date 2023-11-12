@@ -7,37 +7,28 @@ export default function DialogViewDetail({ open, onClose, selectedData }) {
   const [imageID, setImageID] = useState([]);
   const [imgCage, setImgCage] = useState([]);
   const [error, setError] = useState(null);
+  console.log("selectedData", selectedData)
+  // useEffect(() => {
+  //   axios
+  //     .get(`http://localhost:5000/api/v1/cage/${selectedData && selectedData._id}`)
+  //     .then((response) => {
+  //       const dataCage = response.data.data.component;
+  //       console.log(dataCage);
+  //       setImageID(dataCage.image[0]._id);
+  //       console.log(imageID)
+  //       // setCage(dataCage);
+  //     })
+  //     .catch((error) => {
+  //       console.error(error);
+  //       setError('Unable to fetch Cage data.');
+  //     });
+  // }, [selectedData && selectedData._id]);
   useEffect(() => {
-    axios
-      .get(`http://localhost:5000/api/v1/cage/${selectedData && selectedData._id}`)
-      .then((response) => {
-        const dataCage = response.data.data.component;
-        console.log(dataCage);
-        setImageID(dataCage.image[0]._id);
-        console.log(imageID)
-        // setCage(dataCage);
-      })
-      .catch((error) => {
-        console.error(error);
-        setError('Unable to fetch Cage data.');
-      });
-  }, [selectedData && selectedData._id]);
-  useEffect(() => {
-    axios
-      .get(`http://localhost:5000/api/v1/image/${imageID}`)
-      .then((response) => {
-        const imgData = response.data.data.img;
-        if (imgData && imgData.imagePath) {
-          console.log(imgData.imagePath);
-          setImgCage(imgData.imagePath);
-        } else {
-          setError('Image data or imagePath not found in the API response.');
-        }
-      })
-      .catch((error) => {
-        console.error(error);
-        setError('Unable to fetch Cage data.');
-      });
+    if(selectedData && selectedData.images){
+      const images = selectedData?.images?.map(i => i.imagePath);
+      setImgCage(images)
+    }
+    // setImgCage(images)
   }, [imageID]);
   return (
     <div>

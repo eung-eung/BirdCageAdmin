@@ -46,7 +46,7 @@ const get = (url, params) => httpClient.get(url, { params });
 const post = (url, data) => httpClient.post(url, data);
 
 const put = (url, data) => httpClient.put(url, data );
-
+const patch = (url, data) => httpClient.patch(url, data );
 const del = (url) => httpClient.delete(url);
 
-export { get, post, put, del, httpClient };
+export { get, post, put, del, patch, httpClient };
