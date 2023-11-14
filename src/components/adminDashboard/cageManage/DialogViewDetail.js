@@ -27,9 +27,10 @@ export default function DialogViewDetail({ open, onClose, selectedData }) {
     if(selectedData && selectedData.images){
       const images = selectedData?.images?.map(i => i.imagePath);
       setImgCage(images)
+      console.log(images)
     }
     // setImgCage(images)
-  }, [imageID]);
+  }, [selectedData]);
   return (
     <div>
       <Dialog width={1000} open={open} onClose={onClose}>

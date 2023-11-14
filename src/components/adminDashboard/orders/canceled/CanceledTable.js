@@ -3,76 +3,17 @@ import { DataGrid } from "@mui/x-data-grid";
 import { Button } from "@mui/material";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import DetailOrder from "../detailOrder/DetailOrder";
+import { get } from "../../../../utils/httpClient";
 
 export default function CanceledTable({ data }) {
-    const getRowId = (row) => row._id;
+    const getRowId = (row) => row.id;
     const [rows, setRows] = useState([]);
     console.log(data);
     useEffect(() => {
-        setRows(data);
-    }, [data]);
-    // const [rows, setRows] = useState([
-    //     {
-    //         "_id": 1,
-    //         "phoneNumber": '0123456789',
-    //         "total": '100',
-    //         "paymentDate": '2023/10/30',
-    //         "deliveryDate": '2023/11/5',
-    //         "description": 'Fugiat ipsum ipsum deserunt culpa aute sint do nostrud anim incididunt cillum culpa consequat. Excepteur qui ipsum aliquip consequat sint. Sit id mollit nulla mollit nostrud in ea officia proident. Irure nostrud pariatur mollit ad adipisicing reprehenderit deserunt qui eu.',
-    //         "address": '123 Main Street, City, Country',
-    //         "shipFee": '50'
-    //     },
-    //     {
-    //         "_id": 2,
-    //         "phoneNumber": '9876543210',
-    //         "total": '75',
-    //         "paymentDate": '2023/10/31',
-    //         "deliveryDate": '2023/11/5',
-    //         "description": 'Fugiat ipsum ipsum deserunt culpa aute sint do nostrud anim incididunt cillum culpa consequat. Excepteur qui ipsum aliquip consequat sint. Sit id mollit nulla mollit nostrud in ea officia proident. Irure nostrud pariatur mollit ad adipisicing reprehenderit deserunt qui eu.',
-    //         "address": '456 Elm Street, Town, Country',
-    //         "shipFee": '30'
-    //     },
-    //     {
-    //         "_id": 3,
-    //         "phoneNumber": '5555555555',
-    //         "total": '120',
-    //         "paymentDate": '2023/11/01',
-    //         "deliveryDate": '2023/11/5',
-    //         "description": 'Fugiat ipsum ipsum deserunt culpa aute sint do nostrud anim incididunt cillum culpa consequat. Excepteur qui ipsum aliquip consequat sint. Sit id mollit nulla mollit nostrud in ea officia proident. Irure nostrud pariatur mollit ad adipisicing reprehenderit deserunt qui eu.',
-    //         "address": '789 Oak Street, Village, Country',
-    //         "shipFee": '60'
-    //     },
-    //     {
-    //         "_id": 4,
-    //         "phoneNumber": '3333333333',
-    //         "total": '90',
-    //         "paymentDate": '2023/11/02',
-    //         "deliveryDate": '2023/11/5',
-    //         "description": 'Fugiat ipsum ipsum deserunt culpa aute sint do nostrud anim incididunt cillum culpa consequat. Excepteur qui ipsum aliquip consequat sint. Sit id mollit nulla mollit nostrud in ea officia proident. Irure nostrud pariatur mollit ad adipisicing reprehenderit deserunt qui eu.',
-    //         "address": '101 Pine Street, Hamlet, Country',
-    //         "shipFee": '45'
-    //     },
-    //     {
-    //         "_id": 5,
-    //         "phoneNumber": '7777777777',
-    //         "total": '150',
-    //         "paymentDate": '2023/11/03',
-    //         "deliveryDate": '2023/11/5',
-    //         "description": 'Fugiat ipsum ipsum deserunt culpa aute sint do nostrud anim incididunt cillum culpa consequat. Excepteur qui ipsum aliquip consequat sint. Sit id mollit nulla mollit nostrud in ea officia proident. Irure nostrud pariatur mollit ad adipisicing reprehenderit deserunt qui eu.',
-    //         "address": '202 Cedar Street, Suburb, Country',
-    //         "shipFee": '75'
-    //     },
-    //     {
-    //         "_id": 6,
-    //         "phoneNumber": '4444444444',
-    //         "total": '85',
-    //         "paymentDate": '2023/11/04',
-    //         "deliveryDate": '2023/11/5',
-    //         "description": 'Fugiat ipsum ipsum deserunt culpa aute sint do nostrud anim incididunt cillum culpa consequat. Excepteur qui ipsum aliquip consequat sint. Sit id mollit nulla mollit nostrud in ea officia proident. Irure nostrud pariatur mollit ad adipisicing reprehenderit deserunt qui eu.',
-    //         "address": '303 Maple Street, City, Country',
-    //         "shipFee": '40'
-    //     }
-    // ]);
+        get("/Orders?$filter=status eq 4 & $expand=OrderDetails($expand=Cage), Customer($expand=Account)")
+        .then(res => res.data.value)
+        .then(res => setRows(res))
+    }, []);
 
     const [selectedRow, setSelectedRow] = useState(null);
     const [isDialogOpen, setIsDialogOpen] = useState(false);
@@ -83,11 +24,15 @@ export default function CanceledTable({ data }) {
     };
 
     const columns = [
-        { field: "phoneNumber", headerName: "Phone number", width: 250 },
+        { field: "id", headerName: "Order id", width: 150},
+        { field: "phoneNumber", headerName: "Phone number", width: 150, valueGetter: (params) => params.row.customer?.account?.phoneNumber },
+        { field: "fullname", headerName: "Customer name", width: 200 , valueGetter: (params) => {
+            const {firstName, lastName} = params.row.customer
+            return `${firstName} ${lastName}`
+        }},
         { field: "shipFee", headerName: "Ship fee", width: 150 },
         { field: "total", headerName: "Total", width: 150 },
-        { field: "paymentDate", headerName: "Payment date", width: 200 },
-        { field: "deliveryDate", headerName: "Delivey date", width: 200 },
+        { field: "orderDate", headerName: "Payment date", width: 200, valueGetter: (params) => new Date(params.row.orderDate).toLocaleString("en-EN") },
         {
             field: "detail",
             headerName: "Detail",
@@ -130,7 +75,7 @@ export default function CanceledTable({ data }) {
         // },
     ];
     return (
-        <div style={{ height: 400, marginLeft: "300px", marginTop: "100px" }}>
+        <div style={{ height: 400, marginLeft: "", marginTop: "20px" }}>
             <DataGrid
                 rows={rows}
                 sx={{

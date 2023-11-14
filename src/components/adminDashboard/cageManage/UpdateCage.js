@@ -1,25 +1,62 @@
-import axios from 'axios';
-import React, { useEffect, useState } from 'react'
-import { useNavigate, useParams } from 'react-router-dom';
-import { Alert, AlertTitle, Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle } from '@mui/material';
-import dayjs from 'dayjs';
-
-
+import axios from "axios";
+import React, { useEffect, useState } from "react";
+import { useNavigate, useParams } from "react-router-dom";
+import {
+    Alert,
+    AlertTitle,
+    Button,
+    Dialog,
+    DialogActions,
+    DialogContent,
+    DialogContentText,
+    DialogTitle,
+} from "@mui/material";
+import dayjs from "dayjs";
+import { get } from "../../../utils/httpClient";
+import Roof from "../cageComponent/Roof";
+import Spoke from "../cageComponent/Spoke";
+import Door from "../cageComponent/Door";
+import Base from "../cageComponent/Base";
+import {
+    ref,
+    uploadBytes,
+    getDownloadURL,
+    listAll,
+    list,
+} from "firebase/storage";
+import uuidv4 from "../../../utils/guid";
+import { storage } from "../../../utils/firebase";
+import {put} from "../../../utils/httpClient";
 export default function UpdateCage() {
     const navigate = useNavigate();
     const [cage, setCage] = useState({
-        name: '',
-        length: '',
-        width: '',
-        height: '',
-        inStock: '',
-        description: '',
-        createDate: dayjs().format('YYYY/MM/DD'),
-        price: '',
+        name: "",
+        length: "",
+        width: "",
+        height: "",
+        inStock: "",
+        description: "",
+        createDate: dayjs().format("YYYY/MM/DD"),
+        price: "",
         filename: null,
-        filenames: []
+        filenames: [],
     });
+    const [doorList, setDoorList] = useState([]);
+    const [baseList, setBaseList] = useState([]);
+    const [spokeList, setSpokeList] = useState([]);
+    const [roofList, setRoofList] = useState([]);
+    const [imagePath, setImagePath] = useState("");
+    const [imageList, setImageList] = useState([]);
 
+    const [door, setDoor] = useState("");
+    const [doorQuantity, setDoorQuantity] = useState("1");
+
+    const [spoke, setSpoke] = useState("");
+    const [spokeQuantity, setSpokeQuantity] = useState("1");
+
+    const [base, setBase] = useState("");
+
+    const [roof, setRoof] = useState("");
     const [isWidthValid, setIsWidthValid] = useState(true);
     const [isLengthValid, setIsLengthValid] = useState(true);
     const [isHeightValid, setIsHeightValid] = useState(true);
@@ -28,12 +65,16 @@ export default function UpdateCage() {
     const [uploadedMainImage, setuploadedMainImage] = useState(null);
     const [extraImages, setExtraImages] = useState([]);
 
+    const [currentBase, setCurrentBase] = useState(null);
+    const [currentDoor, setCurrentDoor] = useState(null);
+    const [currentRoof, setCurrentRoof] = useState(null);
+    const [currentSpoke, setCurrentSpoke] = useState(null);
+
     const { id } = useParams();
     useEffect(() => {
-        axios
-            .get(`http://localhost:5000/api/v1/cage/${id}`)
+        get(`/Cages/${id}?&$expand=CageComponents($expand=Component), Images`)
             .then((response) => {
-                const dataCage = response.data.data.component;
+                const dataCage = response.data;
                 console.log(dataCage);
                 setCage({
                     ...cage,
@@ -46,33 +87,73 @@ export default function UpdateCage() {
                     createDate: dataCage.createDate,
                     price: dataCage.price,
                     filename: dataCage.imagePath,
-                    filenames: dataCage.image[0].imagePath,
+                    filenames: dataCage.images,
                 });
-                console.log(dataCage.image[0].imagePath);
+                dataCage.cageComponents.forEach(cc => {
+                    switch(cc.component.type){
+                        case "base":
+                            setCurrentBase({...cc.component, quantity: cc.quantity});
+                            break;
+                        case "door":
+                            setCurrentDoor({...cc.component, quantity: cc.quantity});
+                            break;
+                        case "roof":
+                            setCurrentRoof({...cc.component, quantity: cc.quantity});
+                            break;
+                        case "spoke":
+                            setCurrentSpoke({...cc.component, quantity: cc.quantity});
+                            break;
+                        default:
+                    }
+                })
             })
             .catch((error) => {
                 console.error(error);
-                setError('Unable to fetch Cage data.');
+                setError("Unable to fetch Cage data.");
             });
     }, [id]);
-
+    useEffect(() => {
+        get("/Components")
+            .then((res) => res.data.value)
+            .then((res) => {
+                res.forEach((c) => {
+                    switch (c.type) {
+                        case "base":
+                            setBaseList((prev) => [...prev, c]);
+                            break;
+                        case "door":
+                            setDoorList((prev) => [...prev, c]);
+                            break;
+                        case "roof":
+                            setRoofList((prev) => [...prev, c]);
+                            break;
+                        case "spoke":
+                            setSpokeList((prev) => [...prev, c]);
+                            break;
+                        default:
+                    }
+                });
+            });
+    }, []);
     const handleMainImageChange = (e) => {
         const selectedFile = e.target.files[0];
         console.log(selectedFile);
 
         const file_name = selectedFile.name;
-        const idx_dot = file_name.lastIndexOf('.') + 1;
-        const extFile = file_name.substr(idx_dot, file_name.length).toLowerCase();
+        const idx_dot = file_name.lastIndexOf(".") + 1;
+        const extFile = file_name
+            .substr(idx_dot, file_name.length)
+            .toLowerCase();
         console.log(extFile);
 
         if (extFile === "jpg" || extFile === "jpeg" || extFile === "png") {
             setCage((prevCage) => ({
                 ...prevCage,
-                filename: selectedFile
+                filename: selectedFile,
             }));
             setuploadedMainImage(URL.createObjectURL(selectedFile));
         } else {
-            e.target.value = ''; // Clear the input if it's not an image
+            e.target.value = ""; // Clear the input if it's not an image
             setCage((prevCage) => ({
                 ...prevCage,
                 filename: null,
@@ -85,8 +166,10 @@ export default function UpdateCage() {
         console.log(selectedFiles);
 
         const file_name = selectedFiles[0].name;
-        const idx_dot = file_name.lastIndexOf('.') + 1;
-        const extFile = file_name.substr(idx_dot, file_name.length).toLowerCase();
+        const idx_dot = file_name.lastIndexOf(".") + 1;
+        const extFile = file_name
+            .substr(idx_dot, file_name.length)
+            .toLowerCase();
         console.log(extFile);
 
         if (extFile === "jpg" || extFile === "jpeg" || extFile === "png") {
@@ -94,86 +177,126 @@ export default function UpdateCage() {
                 ...prevCage,
                 filenames: selectedFiles,
             }));
-            const extraImageUrls = selectedFiles.map((file) => URL.createObjectURL(file));
+            const extraImageUrls = selectedFiles.map((file) =>
+                URL.createObjectURL(file)
+            );
 
             setExtraImages(extraImageUrls);
         } else {
-            e.target.value = ''; // Clear the input if it's not an image
+            e.target.value = ""; // Clear the input if it's not an image
             setCage((prevCage) => ({
                 ...prevCage,
                 filenames: [],
             }));
         }
-
     };
 
     const handleChange = (e) => {
         const { name, value, type, files } = e.target;
 
-        if (name === 'width') {
+        if (name === "width") {
             const isValid = value >= 30 && value <= 100;
             setIsWidthValid(isValid);
         }
 
-        if (name === 'length') {
+        if (name === "length") {
             const isValid = value >= 30 && value <= 100 && value > cage.width;
             setIsLengthValid(isValid);
         }
 
-        if (name === 'height') {
+        if (name === "height") {
             const isValid = value >= 30 && value <= 100;
             setIsHeightValid(isValid);
         }
 
-        if (name === 'price') {
+        if (name === "price") {
             const isValid = value > 0;
             setIsPriceValid(isValid);
         }
 
         setCage({ ...cage, [name]: value });
-
     };
-
-
-
-
-    const handleSubmit = (e) => {
+    const uploadImageToFirebase = async (image, isMainImage) => {
+        if (image == null) return;
+        const imageRef = ref(
+            storage,
+            `cage-images/${uuidv4() + "_" + image.name}`
+        );
+        uploadBytes(imageRef, image).then((snapshot) => {
+            getDownloadURL(snapshot.ref).then((url) => {
+                if (isMainImage) setImagePath(url);
+                else setImageList([...imageList, { imagePath: url }]);
+            });
+        });
+    };
+    const handleSubmit = async (e) => {
         e.preventDefault();
         console.log("Submit button clicked");
-        if (!isWidthValid || !isLengthValid || !isHeightValid || !isPriceValid) {
-
-            console.log('Form data is not valid. Please correct the errors.');
+        if (
+            !isWidthValid ||
+            !isLengthValid ||
+            !isHeightValid ||
+            !isPriceValid
+        ) {
+            console.log("Form data is not valid. Please correct the errors.");
             return;
         }
 
-        const formData = new FormData();
-
-        formData.append('name', cage.name);
-        formData.append('length', cage.length);
-        formData.append('width', cage.width);
-        formData.append('height', cage.height);
-        formData.append('inStock', cage.inStock);
-        formData.append('description', cage.description);
-        formData.append('createDate', cage.createDate);
-        formData.append('price', cage.price);
-        formData.append('filename', cage.filename);
-        if (Array.isArray(cage.filenames) && cage.filenames.length > 0) {
-            for (let i = 0; i < cage.filenames.length; i++) {
-                formData.append('filenames', cage.filenames[i]);
-            }
+        const creatingCage = {};
+        // Append fields from newCage to formData
+        for (const key in cage) {
+            if(key !== "filenames" && key !== "imagePath" && key != "filename")
+            creatingCage[key] = cage[key];
         }
 
-        axios
-            .patch(`http://localhost:5000/api/v1/cage/${id}`, formData)
-            .then(() => {
-                setOpen(true);
-                console.log('Data updated successfully');
+        // Append the image files
+        setImagePath("");
+        setImageList([]);
+        await uploadImageToFirebase(
+            cage.filename,
+            true
+        );
+        for (
+            let fileIndex = 0;
+            fileIndex < cage.filenames.length;
+            fileIndex++
+        ) {
+            await uploadImageToFirebase(
+                cage.filenames[fileIndex],
+                false
+            );
+        }
+        console.log("imagePath", imagePath);
+        console.log("imageList", imageList);
+        creatingCage.imagePath = imagePath;
+        creatingCage.images = imageList;
+        creatingCage.status = "AVAILABLE";
+        creatingCage.id = id;
+        const cageComponents = [];
+        cageComponents.push({ ComponentId: base.id, Quantity: 1 });
+        cageComponents.push({ ComponentId: door.id, Quantity: doorQuantity });
+        cageComponents.push({ ComponentId: roof.id, Quantity: 1 });
+        cageComponents.push({ ComponentId: spoke.id, Quantity: spokeQuantity });
+        creatingCage.cageComponents = cageComponents;
+        put("/Cages/" + id, creatingCage)
+        .then(res => {
+            setOpen(true);
+            navigate("/cage");
+        }).catch(err => {
+            console.log(err)
+            setError("Unable to update the cage.");
+        })
 
-            })
-            .catch((error) => {
-                console.log(error);
-                setError('Unable to update the cage.');
-            });
+        // axios
+        //     .patch(`http://localhost:5000/api/v1/cage/${id}`, formData)
+        //     .then(() => {
+        //         setOpen(true);
+        //         console.log("Data updated successfully");
+        //     })
+        //     .catch((error) => {
+        //         console.log(error);
+        //         setError("Unable to update the cage.");
+        //     });
     };
 
     const [open, setOpen] = useState(false);
@@ -181,7 +304,7 @@ export default function UpdateCage() {
         setOpen(false);
     };
     const handleCageClick = () => {
-        navigate('/cage');
+        navigate("/cage");
     };
     return (
         <div style={{ marginLeft: "150px" }}>
@@ -190,123 +313,222 @@ export default function UpdateCage() {
                 <section class="text-gray-600 body-font relative">
                     <div class="container px-5 py-24 mx-auto">
                         <div class="flex flex-col text-center w-full mb-12">
-                            <h1 class="sm:text-3xl text-2xl font-medium title-font mb-4 text-gray-900">Update Cage</h1>
+                            <h1 class="sm:text-3xl text-2xl font-medium title-font mb-4 text-gray-900">
+                                Update Cage
+                            </h1>
                         </div>
                         <div class="lg:w-1/2 md:w-2/3 mx-auto">
                             <div class="flex flex-wrap -m-2">
                                 <div class="p-2 w-full">
                                     <div class="col-span-full">
-                                        <label for="name" class="block text-sm font-medium leading-6 text-gray-900">Name</label>
+                                        <label
+                                            for="name"
+                                            class="block text-sm font-medium leading-6 text-gray-900"
+                                        >
+                                            Name
+                                        </label>
                                         <div class="mt-2">
-                                            <input type="text"
+                                            <input
+                                                type="text"
                                                 name="name"
                                                 value={cage.name}
                                                 onChange={handleChange}
-                                                autocomplete="Name" class="block p-2 w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6" />
+                                                autocomplete="Name"
+                                                class="block p-2 w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                                            />
                                         </div>
                                     </div>
                                 </div>
                                 <div class="p-2 w-full">
                                     <div class="col-span-full">
-                                        <label for="description" class="block text-sm font-medium leading-6 text-gray-900">Description</label>
+                                        <label
+                                            for="description"
+                                            class="block text-sm font-medium leading-6 text-gray-900"
+                                        >
+                                            Description
+                                        </label>
                                         <div class="mt-2">
-                                            <textarea type="text"
+                                            <textarea
+                                                type="text"
                                                 name="description"
                                                 value={cage.description}
-                                                onChange={handleChange} rows="3" class="block p-2 w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"></textarea>
+                                                onChange={handleChange}
+                                                rows="3"
+                                                class="block p-2 w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                                            ></textarea>
                                         </div>
                                     </div>
                                 </div>
                                 <div class="p-2 w-full">
                                     <div class="col-span-full">
-                                        <label for="price" class="block text-sm font-medium leading-6 text-gray-900">Price</label>
+                                        <label
+                                            for="price"
+                                            class="block text-sm font-medium leading-6 text-gray-900"
+                                        >
+                                            Price
+                                        </label>
                                         <div class="mt-2">
-                                            <input type="number"
+                                            <input
+                                                type="number"
                                                 name="price"
                                                 value={cage.price}
-                                                onChange={handleChange} autocomplete="Price" class="block p-2 w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6" />
-                                            {!isPriceValid && <div style={{ color: 'red' }}>Price must be larger than 0</div>}
+                                                onChange={handleChange}
+                                                autocomplete="Price"
+                                                class="block p-2 w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                                            />
+                                            {!isPriceValid && (
+                                                <div style={{ color: "red" }}>
+                                                    Price must be larger than 0
+                                                </div>
+                                            )}
                                         </div>
                                     </div>
                                 </div>
                                 <div class="p-2 w-1/2">
                                     <div class="sm:col-span-3">
-                                        <label for="width" class="block text-sm font-medium leading-6 text-gray-900">Width</label>
+                                        <label
+                                            for="width"
+                                            class="block text-sm font-medium leading-6 text-gray-900"
+                                        >
+                                            Width
+                                        </label>
                                         <div class="mt-2">
-                                            <input type="number"
+                                            <input
+                                                type="number"
                                                 name="width"
                                                 value={cage.width}
                                                 onChange={handleChange}
-                                                required autocomplete="Width" class="block p-2 w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6" />
-                                            {!isWidthValid && <div style={{ color: 'red' }}>Width must be between 30 and 100</div>}
+                                                required
+                                                autocomplete="Width"
+                                                class="block p-2 w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                                            />
+                                            {!isWidthValid && (
+                                                <div style={{ color: "red" }}>
+                                                    Width must be between 30 and
+                                                    100
+                                                </div>
+                                            )}
                                         </div>
                                     </div>
                                 </div>
                                 <div class="p-2 w-1/2">
-
                                     <div class="sm:col-span-3">
-                                        <label for="length" class="block text-sm font-medium leading-6 text-gray-900">Length</label>
+                                        <label
+                                            for="length"
+                                            class="block text-sm font-medium leading-6 text-gray-900"
+                                        >
+                                            Length
+                                        </label>
                                         <div class="mt-2">
-                                            <input type="number"
+                                            <input
+                                                type="number"
                                                 name="length"
                                                 value={cage.length}
                                                 onChange={handleChange}
-                                                required autocomplete="Length" class="block p-2 w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6" />
-                                            {!isLengthValid && <div style={{ color: 'red' }}>Length must be between 30 and 100 and greater than width</div>}
+                                                required
+                                                autocomplete="Length"
+                                                class="block p-2 w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                                            />
+                                            {!isLengthValid && (
+                                                <div style={{ color: "red" }}>
+                                                    Length must be between 30
+                                                    and 100 and greater than
+                                                    width
+                                                </div>
+                                            )}
                                         </div>
                                     </div>
                                 </div>
                                 <div class="p-2 w-1/2">
                                     <div class="sm:col-span-3">
-                                        <label for="height" class="block text-sm font-medium leading-6 text-gray-900">Height</label>
+                                        <label
+                                            for="height"
+                                            class="block text-sm font-medium leading-6 text-gray-900"
+                                        >
+                                            Height
+                                        </label>
                                         <div class="mt-2">
-                                            <input type="number"
+                                            <input
+                                                type="number"
                                                 name="height"
                                                 value={cage.height}
                                                 onChange={handleChange}
-                                                required autocomplete="Height" class="block p-2 w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6" />
-                                            {!isHeightValid && <div style={{ color: 'red' }}>Height must be between 30 and 100</div>}
+                                                required
+                                                autocomplete="Height"
+                                                class="block p-2 w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                                            />
+                                            {!isHeightValid && (
+                                                <div style={{ color: "red" }}>
+                                                    Height must be between 30
+                                                    and 100
+                                                </div>
+                                            )}
                                         </div>
                                     </div>
                                 </div>
                                 <div class="p-2 w-1/2">
                                     <div class="sm:col-span-3">
-                                        <label for="inStock" class="block text-sm font-medium leading-6 text-gray-900">In Stock</label>
+                                        <label
+                                            for="inStock"
+                                            class="block text-sm font-medium leading-6 text-gray-900"
+                                        >
+                                            In Stock
+                                        </label>
                                         <div class="mt-2">
-                                            <input type="number"
+                                            <input
+                                                type="number"
                                                 name="inStock"
                                                 value={cage.inStock}
                                                 onChange={handleChange}
-                                                required autocomplete="In Stock" class="block p-2 w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6" />
+                                                required
+                                                autocomplete="In Stock"
+                                                class="block p-2 w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                                            />
                                         </div>
                                     </div>
                                 </div>
-
-
 
                                 <div class="p-2 w-full">
                                     <div class="p-2 w-full">
                                         <div class="col-span-full">
-                                            <label for="filename" class="block text-sm font-medium leading-6 text-gray-900">Main image</label>
+                                            <label
+                                                for="filename"
+                                                class="block text-sm font-medium leading-6 text-gray-900"
+                                            >
+                                                Main image
+                                            </label>
                                             <div class="mt-2 flex justify-center rounded-lg border border-dashed border-gray-900/25 px-2 py-2">
                                                 <div class="text-center">
                                                     <div class="mt-1 flex text-sm leading-6 text-gray-600">
-                                                        <label for="filename" class="relative cursor-pointer rounded-md bg-white font-semibold text-indigo-600 focus-within:outline-none focus-within:ring-2 focus-within:ring-indigo-600 focus-within:ring-offset-2 hover:text-indigo-500">
-                                                            <span>Upload a file</span>
-                                                            <input id="filename"
+                                                        <label
+                                                            for="filename"
+                                                            class="relative cursor-pointer rounded-md bg-white font-semibold text-indigo-600 focus-within:outline-none focus-within:ring-2 focus-within:ring-indigo-600 focus-within:ring-offset-2 hover:text-indigo-500"
+                                                        >
+                                                            <span>
+                                                                Upload a file
+                                                            </span>
+                                                            <input
+                                                                id="filename"
                                                                 type="file"
                                                                 name="filename"
                                                                 accept=".jpg, .jpeg, .png"
-                                                                onChange={handleMainImageChange}
-                                                                class="sr-only" />
+                                                                onChange={
+                                                                    handleMainImageChange
+                                                                }
+                                                                class="sr-only"
+                                                            />
                                                         </label>
-                                                        <p class="pl-1">or drag and drop</p>
+                                                        <p class="pl-1">
+                                                            or drag and drop
+                                                        </p>
                                                     </div>
                                                 </div>
                                             </div>
 
                                             <div>
-                                                <h2 class="pl-1">Selected Main Image:</h2>
+                                                <h2 class="pl-1">
+                                                    Selected Main Image:
+                                                </h2>
                                                 {uploadedMainImage ? (
                                                     <div>
                                                         <div className="image-preview">
@@ -314,7 +536,9 @@ export default function UpdateCage() {
                                                                 <div className="p-4 md:w-1/4 sm:w-1/2 w-full">
                                                                     <div className="border-2 border-gray-200 px-4 py-2 rounded-lg">
                                                                         <img
-                                                                            src={uploadedMainImage}
+                                                                            src={
+                                                                                uploadedMainImage
+                                                                            }
                                                                             alt="Main Image"
                                                                             className="rounded-lg w-full h-20 object-cover object-center mb-3"
                                                                         />
@@ -329,7 +553,9 @@ export default function UpdateCage() {
                                                             <div className="p-4 md:w-1/4 sm:w-1/2 w-full">
                                                                 <div className="border-2 border-gray-200 px-4 py-2 rounded-lg">
                                                                     <img
-                                                                        src={cage.filename}
+                                                                        src={
+                                                                            cage.filename
+                                                                        }
                                                                         alt="Main Image"
                                                                         className="rounded-lg w-full h-20 object-cover object-center mb-3"
                                                                     />
@@ -338,80 +564,156 @@ export default function UpdateCage() {
                                                         </div>
                                                     </div>
                                                 )}
-
                                             </div>
-
                                         </div>
                                     </div>
                                     <div class="p-2 w-full">
                                         <div class="col-span-full">
-                                            <label for="filenames" class="block text-sm font-medium leading-6 text-gray-900">Extra images</label>
+                                            <label
+                                                for="filenames"
+                                                class="block text-sm font-medium leading-6 text-gray-900"
+                                            >
+                                                Extra images
+                                            </label>
                                             <div class="mt-2 flex justify-center rounded-lg border border-dashed border-gray-900/25 px-2 py-2">
                                                 <div class="text-center">
                                                     <div class="mt-1 flex text-sm leading-6 text-gray-600">
-                                                        <label for="filenames" class="relative cursor-pointer rounded-md bg-white font-semibold text-indigo-600 focus-within:outline-none focus-within:ring-2 focus-within:ring-indigo-600 focus-within:ring-offset-2 hover:text-indigo-500">
-                                                            <span>Upload a file</span>
-                                                            <input id="filenames"
+                                                        <label
+                                                            for="filenames"
+                                                            class="relative cursor-pointer rounded-md bg-white font-semibold text-indigo-600 focus-within:outline-none focus-within:ring-2 focus-within:ring-indigo-600 focus-within:ring-offset-2 hover:text-indigo-500"
+                                                        >
+                                                            <span>
+                                                                Upload a file
+                                                            </span>
+                                                            <input
+                                                                id="filenames"
                                                                 type="file"
                                                                 name="filenames"
                                                                 accept=".jpg, .jpeg, .png"
                                                                 multiple
-                                                                onChange={handleExtraImagesChange}
-                                                                class="sr-only" />
+                                                                onChange={
+                                                                    handleExtraImagesChange
+                                                                }
+                                                                class="sr-only"
+                                                            />
                                                         </label>
-                                                        <p class="pl-1">or drag and drop</p>
+                                                        <p class="pl-1">
+                                                            or drag and drop
+                                                        </p>
                                                     </div>
                                                 </div>
                                             </div>
 
-
                                             {extraImages.length > 0 ? (
                                                 <div>
-                                                    <h2 class="pl-1">Selected Extra Images:</h2>
+                                                    <h2 class="pl-1">
+                                                        Selected Extra Images:
+                                                    </h2>
                                                     <div className="image-preview">
                                                         <div className="flex flex-wrap -m-4 text-center">
-                                                            {extraImages.map((image, index) => (
-                                                                <div className="p-4 md:w-1/4 sm:w-1/2 w-full" key={index}>
-                                                                    <div className="border-2 border-gray-200 px-4 py-2 rounded-lg">
-                                                                        <img
-                                                                            src={image}
-                                                                            alt={`Image ${index + 1}`}
-                                                                            className="flex-shrink-0 rounded-lg w-full h-20 object-cover object-center mb-3"
-                                                                        />
-                                                                    </div>
-                                                                </div>
-                                                            ))}
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            ) :
-                                                (
-                                                    <div>
-                                                        <h2 class="pl-1">Selected Extra Images:</h2>
-                                                        <div className="image-preview">
-                                                            <div className="flex flex-wrap -m-4 text-center">
-                                                                {cage.filenames.map((image, index) => (
-                                                                    <div className="p-4 md:w-1/4 sm:w-1/2 w-full" key={index}>
+                                                            {extraImages.map(
+                                                                (
+                                                                    image,
+                                                                    index
+                                                                ) => (
+                                                                    <div
+                                                                        className="p-4 md:w-1/4 sm:w-1/2 w-full"
+                                                                        key={
+                                                                            index
+                                                                        }
+                                                                    >
                                                                         <div className="border-2 border-gray-200 px-4 py-2 rounded-lg">
                                                                             <img
-                                                                                src={image}
-                                                                                alt={`Image ${index + 1}`}
+                                                                                src={
+                                                                                    image
+                                                                                }
+                                                                                alt={`Image ${
+                                                                                    index +
+                                                                                    1
+                                                                                }`}
                                                                                 className="flex-shrink-0 rounded-lg w-full h-20 object-cover object-center mb-3"
                                                                             />
                                                                         </div>
                                                                     </div>
-                                                                ))}
-                                                            </div>
+                                                                )
+                                                            )}
                                                         </div>
                                                     </div>
-                                                )}
+                                                </div>
+                                            ) : (
+                                                <div>
+                                                    <h2 class="pl-1">
+                                                        Selected Extra Images:
+                                                    </h2>
+                                                    <div className="image-preview">
+                                                        <div className="flex flex-wrap -m-4 text-center">
+                                                            {cage.filenames.map(
+                                                                (
+                                                                    image,
+                                                                    index
+                                                                ) => (
+                                                                    <div
+                                                                        className="p-4 md:w-1/4 sm:w-1/2 w-full"
+                                                                        key={
+                                                                            index
+                                                                        }
+                                                                    >
+                                                                        <div className="border-2 border-gray-200 px-4 py-2 rounded-lg">
+                                                                            <img
+                                                                                src={
+                                                                                    image.imagePath
+                                                                                }
+                                                                                alt={`Image ${
+                                                                                    index +
+                                                                                    1
+                                                                                }`}
+                                                                                className="flex-shrink-0 rounded-lg w-full h-20 object-cover object-center mb-3"
+                                                                            />
+                                                                        </div>
+                                                                    </div>
+                                                                )
+                                                            )}
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            )}
                                         </div>
                                     </div>
                                 </div>
-                                <div class="p-2 w-full">
-                                    <button type='submit' class="flex mx-auto text-white bg-indigo-500 border-0 py-2 px-8 focus:outline-none hover:bg-indigo-600 rounded text-lg">Update</button>
+                                <div className="component-container">
+                                    <div>
+                                        <Roof
+                                            setRoof={setRoof}
+                                            roofs={roofList}
+                                            selectedItem={currentRoof}
+                                        />
+                                        <Spoke
+                                            spokes={spokeList}
+                                            setSpoke={setSpoke}
+                                            setQuantity={setSpokeQuantity}
+                                            selectedItem={currentSpoke}
+                                        />
+                                        <Door
+                                            setDoor={setDoor}
+                                            setQuantity={setDoorQuantity}
+                                            doors={doorList}
+                                            selectedItem={currentDoor}
+                                        />
+                                        <Base
+                                            setBase={setBase}
+                                            bases={baseList}
+                                            selectedItem={currentBase}
+                                        />
+                                    </div>
                                 </div>
-
+                                <div class="p-2 w-full">
+                                    <button
+                                        type="submit"
+                                        class="flex mx-auto text-white bg-indigo-500 border-0 py-2 px-8 focus:outline-none hover:bg-indigo-600 rounded text-lg"
+                                    >
+                                        Update
+                                    </button>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -438,5 +740,5 @@ export default function UpdateCage() {
                 </DialogActions>
             </Dialog>
         </div>
-    )
+    );
 }

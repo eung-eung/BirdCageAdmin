@@ -10,15 +10,16 @@ import {
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import DetailOrder from "../detailOrder/DetailOrder";
 import { handleUpdateOrderStatus } from "../utils/orderStatusUtil";
-
-export default function ProcessingTable({ data, handleCallback }) {
-    const getRowId = (row) => row._id;
-
+import {get} from "../../../../utils/httpClient";
+export default function ProcessingTable({  handleCallback }) {
+    const getRowId = (row) => row.id;
     const [rows, setRows] = useState([]);
-    console.log(data);
+    
     useEffect(() => {
-        setRows(data);
-    }, [data]);
+        get("/Orders?$filter=status eq 1 & $expand=OrderDetails($expand=Cage), Customer($expand=Account)")
+        .then(res => res.data.value)
+        .then(res => setRows(res))
+    }, []);
 
     const [selectedRow, setSelectedRow] = useState(null);
     const [isDialogOpen, setIsDialogOpen] = useState(false);
@@ -29,11 +30,16 @@ export default function ProcessingTable({ data, handleCallback }) {
     };
 
     const columns = [
-        { field: "phoneNumber", headerName: "Phone number", width: 250 },
+        { field: "id", headerName: "Order id", width: 150},
+        { field: "phoneNumber", headerName: "Phone number", width: 150, valueGetter: (params) => params.row.customer?.account?.phoneNumber },
+        { field: "fullname", headerName: "Customer name", width: 200 , valueGetter: (params) => {
+            const {firstName, lastName} = params.row.customer
+            return `${firstName} ${lastName}`
+        }},
         { field: "shipFee", headerName: "Ship fee", width: 150 },
         { field: "total", headerName: "Total", width: 150 },
-        { field: "paymentDate", headerName: "Payment date", width: 200 },
-        { field: "deliveryDate", headerName: "Delivey date", width: 200 },
+        { field: "orderDate", headerName: "Payment date", width: 200, valueGetter: (params) => new Date(params.row.orderDate).toLocaleString("en-EN") },
+       
         {
             field: "detail",
             headerName: "Detail",
@@ -64,7 +70,8 @@ export default function ProcessingTable({ data, handleCallback }) {
                             variant="contained"
                             onClick={() => {
                                 handleCallback()
-                                handleUpdateOrderStatus("Delivering", params.row._id)
+                                
+                                handleUpdateOrderStatus("Delivering", params.row.id)
                             }
                             }
 
@@ -83,7 +90,7 @@ export default function ProcessingTable({ data, handleCallback }) {
     ];
 
     return (
-        <div style={{ height: 400, marginLeft: "300px", marginTop: "100px" }}>
+        <div style={{ height: 400, marginLeft: "", marginTop: "20px" }}>
             <DataGrid
                 rows={rows}
                 columns={columns}

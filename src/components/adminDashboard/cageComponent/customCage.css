@@ -1,0 +1,149 @@
+* {
+  /* font-family: "Roboto"; */
+}
+
+.size {
+  display: flex;
+  flex-direction: column;
+  position: relative;
+}
+
+.howToOrder {
+  position: absolute;
+  right: 0;
+  border: 1px solid #ddd;
+  padding: 10px;
+  width: 30%;
+  bottom: 0;
+}
+
+.component-images {
+  /* display: flex; */
+  margin-top: 30px;
+  width: 100%;
+  /* justify-content: space-evenly; */
+  float: left;
+}
+
+.component-container {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  margin-top: 20px;
+}
+
+.order-button {
+  position: absolute;
+  right: 0;
+  top: 10%;
+  margin-top: 10px;
+  background: #ffc519;
+  padding: 5px;
+  font-weight: 600;
+  font-family: 'Poppins', sans-serif;
+  border-bottom: 4px solid #8d522c;
+  transition: all 0.8s;
+  border-radius: 30px !important;
+  color: #fff;
+  width: 100%;
+  height: 50px;
+  z-index: 999;
+}
+
+.error-message-order {
+  position: absolute;
+  right: 0px;
+  position: absolute;
+  bottom: 0;
+  margin-top: 20px;
+  display: block;
+  width: 100%;
+  text-align: center;
+  color: red;
+  font-weight: 600;
+}
+
+.order-button:hover {
+  background: #8d522c;
+}
+
+.component-image {
+  display: block;
+  width: 250px;
+  object-fit: contain;
+  height: 200px;
+
+  margin: 0 20px;
+
+}
+
+.component {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  border: 1px solid #ddd;
+  box-shadow: rgba(0, 0, 0, 0.15) 1.95px 1.95px 2.6px;
+  padding: 10px;
+  float: left;
+  margin-right: 20px;
+  border-radius: 30px;
+  width: 20%;
+}
+
+.condition-spoke {
+  font-weight: 600;
+  display: inline;
+  font-size: 25px;
+  color: #8d522c;
+}
+
+.howToOrder-container {
+  position: relative;
+}
+
+.howToOrder-item {
+  font-family: "Roboto";
+  font-size: 14px;
+}
+
+input:focus-visible {
+  outline: none;
+  border: 1px #8d522c solid;
+}
+
+.size_chilren {
+  /* margin-left: 10px; */
+  margin-top: 20px;
+  display: flex;
+  align-items: center;
+}
+
+.size_chilren .error-message {
+  margin-left: 20px;
+
+}
+
+.size_chilren span {
+  font-weight: 600;
+  width: 100px;
+
+}
+
+.ip_custom_cage {
+  border: 1px solid;
+  margin-left: 10px;
+}
+
+.disabled-element {
+  opacity: 0.5;
+  /* Điều chỉnh độ mờ tùy ý */
+  pointer-events: none;
+  /* Để không cho phép tương tác */
+}
+
+.total-component-item {
+  font-weight: 600;
+  color: red;
+  font-size: 18px;
+  margin-top: 10px;
+}

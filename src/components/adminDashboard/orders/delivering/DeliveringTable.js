@@ -4,16 +4,19 @@ import { Button } from '@mui/material';
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import DetailOrder from '../detailOrder/DetailOrder';
 import { handleUpdateOrderStatus } from '../utils/orderStatusUtil';
+import { get } from '../../../../utils/httpClient';
 
 
 
 export default function DeliveryTable({ data, handleCallback }) {
-    const getRowId = (row) => row._id;
+    const getRowId = (row) => row.id;
     const [rows, setRows] = useState([]);
     console.log(data)
     useEffect(() => {
-        setRows(data);
-    }, [data]);
+        get("/Orders?$filter=status eq 2 & $expand=OrderDetails($expand=Cage), Customer($expand=Account)")
+        .then(res => res.data.value)
+        .then(res => setRows(res))
+    }, []);
 
     const [selectedRow, setSelectedRow] = useState(null);
     const [isDialogOpen, setIsDialogOpen] = useState(false);
@@ -25,11 +28,15 @@ export default function DeliveryTable({ data, handleCallback }) {
 
 
     const columns = [
-        { field: 'phoneNumber', headerName: 'Phone number', width: 250 },
-        { field: 'shipFee', headerName: 'Ship fee', width: 150 },
-        { field: 'total', headerName: 'Total', width: 150 },
-        { field: 'paymentDate', headerName: 'Payment date', width: 200 },
-        { field: 'deliveryDate', headerName: 'Delivey date', width: 200 },
+        { field: "id", headerName: "Order id", width: 150},
+        { field: "phoneNumber", headerName: "Phone number", width: 150, valueGetter: (params) => params.row.customer?.account?.phoneNumber },
+        { field: "fullname", headerName: "Customer name", width: 200 , valueGetter: (params) => {
+            const {firstName, lastName} = params.row.customer
+            return `${firstName} ${lastName}`
+        }},
+        { field: "shipFee", headerName: "Ship fee", width: 150 },
+        { field: "total", headerName: "Total", width: 150 },
+        { field: "orderDate", headerName: "Payment date", width: 200, valueGetter: (params) => new Date(params.row.orderDate).toLocaleString("en-EN") },
         {
             field: 'detail',
             headerName: 'Detail',
@@ -56,7 +63,7 @@ export default function DeliveryTable({ data, handleCallback }) {
                             variant="contained"
                             style={{ marginRight: "10px", backgroundColor: "#79AC78", color: "white" }}
                             onClick={() => {
-                                handleUpdateOrderStatus("Completed", params.row._id)
+                                handleUpdateOrderStatus("Completed", params.row.id)
                                 handleCallback()
                             }}
                         >
@@ -68,7 +75,7 @@ export default function DeliveryTable({ data, handleCallback }) {
         },
     ];
     return (
-        <div style={{ height: 400, marginLeft: "300px", marginTop: "100px" }}>
+        <div style={{ height: 400, marginLeft: "", marginTop: "20px" }}>
             <DataGrid
                 rows={rows}
                 columns={columns}

@@ -35,7 +35,7 @@ export default function TableCage({ eventRefresh }) {
       console.log("fetching cages")
         try {
             const response = await post(
-                "/Cages/all?$expand=CageComponents($expand=component), images&$filter=indexof(status,'_') eq -1"
+                "/Cages/all?$expand=CageComponents($expand=component), images&$filter=indexof(status,'_') eq -1&$orderby=createDate desc"
             );
 
             if (response.status === 200) {

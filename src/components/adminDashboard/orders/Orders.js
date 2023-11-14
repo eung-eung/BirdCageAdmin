@@ -13,10 +13,7 @@ import TabList from '@mui/lab/TabList';
 import TabPanel from '@mui/lab/TabPanel';
 export default function Orders() {
     document.title = "Orders Management"
-    const [processingOrder, setProcessingOrder] = useState([]);
-    const [deliveringOrder, setDeliveringOrder] = useState([]);
-    const [completedOrder, setCompletedOrder] = useState([]);
-    const [canceledOrder, setCanceledOrder] = useState([]);
+
     const [eventRefresh, setEventRefresh] = useState(false)
     const [value, setValue] = React.useState('1');
 
@@ -31,8 +28,6 @@ export default function Orders() {
         setEventRefresh(prev => !prev)
 
     }
-
-    console.log(canceledOrder)
     return (
 
         <div style={{ marginTop: "80px", marginLeft: "20%" }} className="service-container">
@@ -40,16 +35,16 @@ export default function Orders() {
                 <TabContext value={value}>
                     <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
                         <TabList onChange={handleChange} aria-label="lab API tabs example">
-                            <Tab sx={{ width: "25%" }} label="Pending" value="1" />
+                            <Tab sx={{ width: "25%" }} label="Processing" value="1" />
                             <Tab sx={{ width: "25%" }} label="Delivering" value="2" />
                             <Tab sx={{ width: "25%" }} label="Completed" value="3" />
                             <Tab sx={{ width: "25%" }} label="Canceled" value="4" />
                         </TabList>
                     </Box>
-                    <TabPanel value="1"><ProcessingTable /></TabPanel>
-                    <TabPanel value="2"><DeliveringTable /></TabPanel>
-                    <TabPanel value="3"><CompletedTable /></TabPanel>
-                    <TabPanel value="4"><CanceledTable /></TabPanel>
+                    <TabPanel value="1"><ProcessingTable handleCallback={handleRefresh} /></TabPanel>
+                    <TabPanel value="2"><DeliveringTable handleCallback={handleRefresh} /></TabPanel>
+                    <TabPanel value="3"><CompletedTable handleCallback={handleRefresh} /></TabPanel>
+                    <TabPanel value="4"><CanceledTable handleCallback={handleRefresh} /></TabPanel>
                 </TabContext>
             </Box>
             {/* <div className="service-title">
